@@ -1,0 +1,26 @@
+name:        silo
+summary:     A command-line utility and API for Git-based backups
+description: With Silo you can backup arbitrary files into one or more Git
+             repositories and take advantage of Git's compression, speed and
+             other features. No Git knowledge needed.
+
+license:  BSD
+authors:  Sebastian Staudt
+email:    koraktor@gmail.com
+homepage: http://koraktor.github.com/silo
+has_yard: true
+
+executables:   silo
+require_paths: lib
+test_files:    test/**/test_*.rb
+
+dependencies:
+  grit:    ~> 2.3.0
+  rubikon: ~> 0.5.0
+
+development_dependencies:
+  shoulda: ~> 2.11.3
+  yard:    ~> 0.6.1
+
+requirements:
+  - git >= 1.6
