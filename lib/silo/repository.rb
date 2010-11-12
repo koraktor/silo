@@ -3,9 +3,9 @@
 #
 # Copyright (c) 2010, Sebastian Staudt
 
-require 'rubygems'
 require 'tmpdir'
 
+require 'rubygems'
 require 'grit'
 
 module Silo
