@@ -82,11 +82,13 @@ module Silo
     def in_work_tree(path = '.')
       tmp_dir = path == :tmp
       path = tmp_dir ? Dir.mktmpdir : File.expand_path(path)
-      old_work_tree = ENV['GIT_WORK_TREE']
-      ENV['GIT_WORK_TREE'] = path
-      yield path
-      ENV['GIT_WORK_TREE'] = old_work_tree
-      FileUtils.rm_rf path, :secure => true if tmp_dir
+      Dir.chdir path do
+        old_work_tree = ENV['GIT_WORK_TREE']
+        ENV['GIT_WORK_TREE'] = path
+        yield path
+        ENV['GIT_WORK_TREE'] = old_work_tree
+        FileUtils.rm_rf path, :secure => true if tmp_dir
+      end
     end
 
     # Prepares the Git repository backing this Silo repository for use with
@@ -95,8 +97,8 @@ module Silo
     # @raise [AlreadyPreparedError] if the repository has been already prepared
     def prepare
       raise AlreadyPreparedError.new(@path) if prepared?
-      in_work_tree :tmp do |tmp_dir|
-        FileUtils.touch File.join(tmp_dir, '.silo')
+      in_work_tree :tmp do
+        FileUtils.touch '.silo'
         @git.add '.silo'
         @git.commit_index 'Enabled Silo for this repository'
       end
