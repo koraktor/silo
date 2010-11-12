@@ -68,6 +68,27 @@ module Silo
       prepare if options[:prepare] && !prepared?
     end
 
+    # Stores a file into the repository inside an optional prefix path
+    #
+    # This adds one commit to the history of the repository including the file
+    # or its changes if it already existed.
+    #
+    # @param [String] path The path of the file to store into the repository
+    # @param [String] prefix An optional prefix where the file is stored inside
+    #        the repository
+    def add(path, prefix = nil)
+      dir      = File.dirname path
+      file     = File.basename path
+      path     = prefix.nil? ? file : File.join(prefix, file)
+      in_work_tree dir do
+        index = @git.index
+        index.read_tree 'HEAD'
+        index.add path, IO.read(file)
+        commit_msg = "Added file #{file} into '#{prefix || '.'}'"
+        index.commit commit_msg, @git.head.commit.sha
+      end
+    end
+
     # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
     #
     # This executes a block of code while the environment variable
