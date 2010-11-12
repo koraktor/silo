@@ -21,9 +21,29 @@ repository, bypassing the automatisms tailored for source code histories.
 
 ## Basic usage
 
+### Configuration files
+
+Silo searches for configuration files (`.silo`) in the current working
+directory, your home directory and your systems global configuration directory
+(i.e. /etc on Unix). Configuration files are expected in a Git-like format and
+may contain the following sections and variables:
+
+* repository
+
+  * path &ndash; The path of the default repository to use
+
+#### Sample
+
+    [repository]
+      path = /some/repository
+
 ### Initialize a repository
 
     silo init [repository path]
+
+### Add files to the repository
+
+    silo add file [file ...] [--prefix <prefix>]
 
 ## Using the Ruby API
 
