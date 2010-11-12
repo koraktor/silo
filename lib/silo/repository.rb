@@ -133,6 +133,28 @@ module Silo
       !(@git.tree/'.silo').nil?
     end
 
+    # Restores a single file or the complete structure of a directory with the
+    # given path from the repository
+    #
+    # @param [String] path The path of the file or directory to restore from
+    #        the repository
+    def restore(path)
+      in_work_tree do
+        object = @git.tree/path
+        raise FileNotFoundError.new(path) if object.nil?
+        if object.is_a? Grit::Tree
+          FileUtils.mkdir path
+          (object.blobs + object.trees).each do |blob|
+            restore File.join(path, blob.basename)
+          end
+        else
+          file = File.new path, 'w'
+          file.write object.data
+          file.close
+        end
+      end
+    end
+
   end
 
 end
