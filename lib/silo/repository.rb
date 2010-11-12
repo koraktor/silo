@@ -68,18 +68,37 @@ module Silo
       prepare if options[:prepare] && !prepared?
     end
 
+    # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
+    #
+    # This executes a block of code while the environment variable
+    # +$GIT_WORK_TREE+ is set to a specified path or alternatively the path of
+    # a temporary directory.
+    #
+    # @param [String, :tmp] path A path or +:tmp+ which will create a temporary
+    #        directory that will be removed afterwards
+    # @yield [path] The code inside this block will be executed with
+    #        +$GIT_WORK_TREE+ set
+    # @yieldparam [String] path The absolute path used for +$GIT_WORK_TREE+
+    def in_work_tree(path = '.')
+      tmp_dir = path == :tmp
+      path = tmp_dir ? Dir.mktmpdir : File.expand_path(path)
+      old_work_tree = ENV['GIT_WORK_TREE']
+      ENV['GIT_WORK_TREE'] = path
+      yield path
+      ENV['GIT_WORK_TREE'] = old_work_tree
+      FileUtils.rm_rf path, :secure => true if tmp_dir
+    end
+
     # Prepares the Git repository backing this Silo repository for use with
     # Silo
     #
     # @raise [AlreadyPreparedError] if the repository has been already prepared
     def prepare
       raise AlreadyPreparedError.new(@path) if prepared?
-      Dir.mktmpdir do |tmp_dir|
-        ENV['GIT_WORK_TREE'] = tmp_dir
+      in_work_tree :tmp do |tmp_dir|
         FileUtils.touch File.join(tmp_dir, '.silo')
         @git.add '.silo'
         @git.commit_index 'Enabled Silo for this repository'
-        ENV['GIT_WORK_TREE'] = nil
       end
     end
 
