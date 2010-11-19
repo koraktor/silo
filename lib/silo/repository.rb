@@ -117,13 +117,11 @@ module Silo
     def in_work_tree(path = '.')
       tmp_dir = path == :tmp
       path = tmp_dir ? Dir.mktmpdir : File.expand_path(path)
-      Dir.chdir path do
-        old_work_tree = ENV['GIT_WORK_TREE']
-        ENV['GIT_WORK_TREE'] = path
-        yield path
-        ENV['GIT_WORK_TREE'] = old_work_tree
-        FileUtils.rm_rf path, :secure => true if tmp_dir
-      end
+      old_work_tree = ENV['GIT_WORK_TREE']
+      ENV['GIT_WORK_TREE'] = path
+      Dir.chdir(path) { yield path }
+      ENV['GIT_WORK_TREE'] = old_work_tree
+      FileUtils.rm_rf path, :secure => true if tmp_dir
     end
 
     # Prepares the Git repository backing this Silo repository for use with
