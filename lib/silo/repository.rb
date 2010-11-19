@@ -96,7 +96,7 @@ module Silo
           end
           dir
         end
-        dir = add.call path, prefix
+        dir = add.call path, prefix || '.'
         type = dir ? 'directory' : 'file'
         commit_msg = "Added #{type} #{path} into '#{prefix || '.'}'"
         index.commit commit_msg, @git.head.commit.sha
