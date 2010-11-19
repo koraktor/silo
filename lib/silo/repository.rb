@@ -68,12 +68,15 @@ module Silo
       prepare if options[:prepare] && !prepared?
     end
 
-    # Stores a file into the repository inside an optional prefix path
+    # Stores a file or full directory structure into the repository inside an
+    # optional prefix path
     #
     # This adds one commit to the history of the repository including the file
-    # or its changes if it already existed.
+    # or directory structure. If the file or directory already existed inside
+    # the prefix, Git will only save the changes.
     #
-    # @param [String] path The path of the file to store into the repository
+    # @param [String] path The path of the file or directory to store into the
+    #        repository
     # @param [String] prefix An optional prefix where the file is stored inside
     #        the repository
     def add(path, prefix = nil)
