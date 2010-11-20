@@ -116,6 +116,26 @@ module Silo
       @remotes[name].add
     end
 
+    # Gets a list of files and directories in the specified path inside the
+    # repository
+    #
+    # @param [String] path The path to search for inside the repository
+    # @return [Array<String>] All files and directories found in the specidied
+    #         path
+    def contents(path = '.')
+      contents = []
+
+      object = (path == '.') ? @git.tree : @git.tree/path
+      contents << path unless path == '.' || object.nil?
+      if object.is_a? Grit::Tree
+        (object.blobs + object.trees).each do |obj|
+          contents += contents ((path == '.') ? obj.basename : File.join(path, obj.basename))
+        end
+      end
+
+      contents
+    end
+
     # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
     #
     # This executes a block of code while the environment variable
