@@ -41,13 +41,18 @@ may contain the following sections and variables:
 
     silo init [repository path]
 
-### Add files to the repository
+### Add files or directories to the repository
 
     silo add file [file ...] [--prefix <prefix>]
 
+### Restore files or directories from the repository
+
+    silo restore file [file ...] [--prefix <prefix>]
+
 ## Using the Ruby API
 
-The documentation of the Ruby API can be seen at [RubyDoc.info][1].
+The documentation of the Ruby API can be seen at [RubyDoc.info][1]. The API
+documentation of the current development version is also available [there][5].
 
 ## Credits
 
@@ -62,7 +67,8 @@ The documentation of the Ruby API can be seen at [RubyDoc.info][1].
 
 Follow Silo on Twitter [@silorb](http://twitter.com/silorb).
 
- [1]: http://rubydoc.info/gems/silo
+ [1]: http://rubydoc.info/gems/silo/frames
  [2]: http://koraktor.github.com/silo
  [3]: http://github.com/koraktor/silo
  [4]: http://github.com/koraktor/silo/issues
+ [5]: http://rubydoc.info/github/koraktor/silo/master/frames
