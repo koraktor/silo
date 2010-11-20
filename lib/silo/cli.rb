@@ -45,7 +45,6 @@ module Silo
     option :prefix, [:path]
     command :restore, -1, 'Restore one or more files or directories from the repository' do
       repo = Repository.new @repo_path
-      Grit.debug = true
       args.each do |file|
         repo.restore file, prefix.path
       end
