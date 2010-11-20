@@ -42,8 +42,6 @@ module Silo
         :prepare => true
       }.merge options
 
-      @path = File.expand_path path
-
       if File.exist?(path)
         if Dir.new(path).count > 2
           unless File.exist?(File.join(path, 'HEAD')) &&
@@ -64,6 +62,11 @@ module Silo
       if !prepared? && @git.commit_count > 0
         raise InvalidRepositoryError.new(path)
       end
+
+      @path    = File.expand_path path
+      @remotes = {}
+
+      load_git_remotes
 
       prepare if options[:prepare] && !prepared?
     end
@@ -103,6 +106,16 @@ module Silo
       end
     end
 
+    # Adds a new remote to this Repository
+    #
+    # @param [String] name The name of the remote to add
+    # @param [String] url The URL of the remote repository
+    # @see Remote
+    def add_remote(name, url)
+      @remotes[name] = Remote::Git.new(self, name, url)
+      @remotes[name].add
+    end
+
     # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
     #
     # This executes a block of code while the environment variable
@@ -124,6 +137,16 @@ module Silo
       FileUtils.rm_rf path, :secure => true if tmp_dir
     end
 
+    # Loads remotes from the backing Git repository's configuration
+    #
+    # @see Remote::Git
+    def load_git_remotes
+      @git.git.remote.split.each do |remote|
+        url = @git.git.config({}, '--get', "remote.#{remote}.url").strip
+        @remotes[remote] = Remote::Git.new(self, remote, url)
+      end
+    end
+
     # Prepares the Git repository backing this Silo repository for use with
     # Silo
     #
@@ -143,6 +166,17 @@ module Silo
     # @return The preparation status of the backing Git repository
     def prepared?
       !(@git.tree/'.silo').nil?
+    end
+
+    # Removes the remote with the given name from this repository
+    #
+    # @param [String] name The name of the remote to remove
+    # @see Remote
+    def remove_remote(name)
+      remote = @remotes[name]
+      raise UndefinedRemoteError.new(name) if remote.nil?
+      remote.remove
+      @remotes[name] = nil
     end
 
     # Restores a single file or the complete structure of a directory with the

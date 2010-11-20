@@ -42,6 +42,30 @@ module Silo
       Repository.new args[0]
     end
 
+    command :remote, 0..-1, 'Add or remove remote repositories' do
+      repo = Repository.new @repo_path
+      usage = lambda do
+        puts 'usage: silo remote add <name> <url>'
+        puts '   or: silo remote rm <name>'
+      end
+      case args[0]
+        when 'add':
+          if args.size == 3
+            repo.add_remote args[1], args[2]
+          else
+            usage.call
+          end
+        when 'rm':
+          if args.size == 2
+            repo.remove_remote args[1]
+          else
+            usage.call
+          end
+        else
+          usage.call
+      end
+    end
+
     option :prefix, [:path]
     command :restore, -1, 'Restore one or more files or directories from the repository' do
       repo = Repository.new @repo_path

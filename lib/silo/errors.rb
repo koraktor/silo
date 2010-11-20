@@ -38,4 +38,21 @@ module Silo
   class InvalidRepositoryError < StandardError
   end
 
+  # Raised when trying to access a remote by name that has no been defined for
+  # the repository
+  #
+  # @author Sebastian Staudt
+  # @see Remote
+  # @since 0.1.0
+  class UndefinedRemoteError < StandardError
+
+    # Creates an instance of UndefinedRemoteError for the given name
+    #
+    # @param [String] name The name of the undefined remote
+    def initialize(name)
+      super "No remote with name '#{name}' defined."
+    end
+
+  end
+
 end

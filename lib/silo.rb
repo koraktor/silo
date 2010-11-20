@@ -8,6 +8,7 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
 require 'silo/errors'
 require 'silo/repository'
+require 'silo/remote/git'
 require 'silo/version'
 
 # A command-line utility and API for Git-based backups
