@@ -16,10 +16,14 @@ module Silo
   # Raised when trying to restore files from a repository that do not exist.
   #
   # @author Sebastian Staudt
-  # @since 0.1.0
   # @see Repository#restore
+  # @since 0.1.0
   class FileNotFoundError < StandardError
 
+    # Creates an instance of FileNotFoundError for the given file path
+    #
+    # @param [String] path The path of the file that does not exist in the
+    #        repository
     def initialize(path)
       super "File not found: '#{path}'"
     end
