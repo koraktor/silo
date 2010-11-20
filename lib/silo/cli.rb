@@ -42,6 +42,28 @@ module Silo
       Repository.new args[0]
     end
 
+    flag :l
+    flag :r
+    command :list, 0..-1, 'List the contents of a repository' do
+      args[0] ||= '.'
+      repo = Repository.new @repo_path
+      contents = []
+      args.each do |path|
+        contents |= repo.contents(path)
+      end
+
+      raise FileNotFoundError.new(args[0]) if contents.empty?
+      contents.reverse! if r.given?
+
+      unless l.given?
+        col_size = contents.max_by { |path| path.size }.size + 1
+        contents.each { |path| put path.ljust(col_size) }
+        puts ''
+      else
+        contents.each { |path| puts path }
+      end
+    end
+
     command :remote, 0..-1, 'Add or remove remote repositories' do
       repo = Repository.new @repo_path
       usage = lambda do
