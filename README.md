@@ -19,6 +19,19 @@ repository, bypassing the automatisms tailored for source code histories.
 * Rubikon &ndash; a Ruby framework for console applications
 * Git >= 1.6
 
+## Installation
+
+You can install Silo using RubyGems. This is the easiest way of installing
+and recommended for most users.
+
+    $ gem install silo
+
+If you want to use the development code you should clone the Git repository:
+
+    $ git clone git://github.com/koraktor/silo.git
+    $ cd silo
+    $ rake install
+
 ## Basic usage
 
 ### Configuration files
@@ -53,6 +66,12 @@ may contain the following sections and variables:
 
 The documentation of the Ruby API can be seen at [RubyDoc.info][1]. The API
 documentation of the current development version is also available [there][5].
+
+## License
+
+This code is free software; you can redistribute it and/or modify it under the
+terms of the new BSD License. A copy of this license can be found in the
+LICENSE file.
 
 ## Credits
 
