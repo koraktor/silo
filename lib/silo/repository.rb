@@ -79,7 +79,7 @@ module Silo
     #        repository
     # @param [String] prefix An optional prefix where the file is stored inside
     #        the repository
-    def add(path, prefix = nil)
+    def add(path, prefix = '.')
       in_work_tree File.dirname(path) do
         index = @git.index
         index.read_tree 'HEAD'
@@ -96,9 +96,9 @@ module Silo
           end
           dir
         end
-        dir = add.call path, prefix || '.'
+        dir = add.call path, prefix
         type = dir ? 'directory' : 'file'
-        commit_msg = "Added #{type} #{path} into '#{prefix || '.'}'"
+        commit_msg = "Added #{type} #{path} into '#{prefix}'"
         index.commit commit_msg, @git.head.commit.sha
       end
     end
