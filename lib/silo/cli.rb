@@ -37,7 +37,7 @@ module Silo
     end
 
     command :init, 0..1, 'Initialize a Silo repository' do
-      args[0] = File.dirname(__FILE__) if args[0].nil?
+      args[0] ||= File.expand_path('.')
       puts "Initializing Silo repository in #{File.expand_path args[0]}..."
       Repository.new args[0]
     end
