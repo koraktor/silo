@@ -95,13 +95,13 @@ module Silo
         puts '   or: silo remote rm <name>'
       end
       case args[0]
-        when 'add':
+        when 'add'
           if args.size == 3
             repo.add_remote args[1], args[2]
           else
             usage.call
           end
-        when 'rm':
+        when 'rm'
           if args.size == 2
             repo.remove_remote args[1]
           else
