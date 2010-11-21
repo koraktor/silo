@@ -157,6 +157,38 @@ module Silo
       FileUtils.rm_rf path, :secure => true if tmp_dir
     end
 
+    # Get information about a file or directory in the repository
+    #
+    # @param [String] path The path of the file or directory to get information
+    #        about
+    # @return [Hash<Symbol, Object>] Information about the requested file or
+    #         directory.
+    def info(path)
+      info = {}
+      object = @git.tree/path
+      raise FileNotFoundError.new(path) if object.nil?
+
+      info[:history] = history path
+      info[:mode]    = object.mode
+      info[:name]    = object.name
+      info[:path]    = path
+      info[:sha]     = object.id
+
+      info[:created]  = info[:history].last.committed_date
+      info[:modified] = info[:history].first.committed_date
+
+      if object.is_a? Grit::Blob
+        info[:mime] = object.mime_type
+        info[:size] = object.size
+        info[:type] = :blob
+      else
+        info[:path] += '/'
+        info[:type] = :tree
+      end
+
+      info
+    end
+
     # Loads remotes from the backing Git repository's configuration
     #
     # @see Remote::Git
