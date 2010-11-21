@@ -180,6 +180,21 @@ module Silo
       end
     end
 
+    # Generate a history of Git commits for either the complete repository or
+    # a specified file or directory
+    #
+    # @param [String] path The path of the file or directory to generate the
+    #        history for. If +nil+, the history of the entire repository will
+    #        be returned.
+    # @return [Array<Grit::Commit>] The commit history for the repository or
+    #         given path
+    def history(path = nil)
+      params = ['--format=raw']
+      params += ['--', path] unless path.nil?
+      output = @git.git.log({}, *params)
+      Grit::Commit.list_from_string @git, output
+    end
+
     # Return whether the Git repository backing this Silo repository has
     # already been prepared for use with Silo
     #
