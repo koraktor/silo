@@ -31,7 +31,7 @@ module Silo
     option :prefix, [:path]
     command :add, -1, 'Store one or more files in the repository' do
       repo = Repository.new @repo_path
-      args.each do |file|
+      args.uniq.each do |file|
         repo.add file, prefix.path
       end
     end
@@ -45,6 +45,7 @@ module Silo
     flag :l
     flag :r
     command :list, 0..-1, 'List the contents of a repository' do
+      args.uniq!
       args[0] ||= '.'
       repo = Repository.new @repo_path
       contents = []
@@ -91,7 +92,7 @@ module Silo
     option :prefix, [:path]
     command :restore, -1, 'Restore one or more files or directories from the repository' do
       repo = Repository.new @repo_path
-      args.each do |file|
+      args.uniq.each do |file|
         repo.restore file, prefix.path
       end
     end
