@@ -36,6 +36,29 @@ module Silo
       end
     end
 
+    command :info, -1, 'Get information about repository contents' do
+      repo = Repository.new @repo_path
+      args.uniq.each do |path|
+        info = repo.info path
+        puts '' unless path == args.first
+        puts "#{info[:type] == :blob ? 'File' : 'Directory'}: #{info[:path]}"
+        if info[:type] == :blob
+          puts "  Size:             #{info[:size].to_s.
+            gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1,")} bytes"
+          puts "  MIME-Type:        #{info[:mime]}"
+        end
+        puts "  Created at:       #{info[:created]}"
+        puts "  Last modified at: #{info[:modified]}"
+
+        if $VERBOSE
+          puts "  Initial commit:   #{info[:history].last.id}"
+          puts "  Last commit:      #{info[:history].first.id}"
+          puts "  Mode:             #{info[:mode]}"
+          puts "  #{info[:type].to_s.capitalize}-ID:          #{info[:sha]}"
+        end
+      end
+    end
+
     command :init, 0..1, 'Initialize a Silo repository' do
       args[0] ||= File.expand_path('.')
       puts "Initializing Silo repository in #{File.expand_path args[0]}..."
