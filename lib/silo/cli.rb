@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 require 'rubygems'
 require 'rubikon'
@@ -117,6 +117,14 @@ module Silo
       repo = Repository.new @repo_path
       args.uniq.each do |file|
         repo.restore file, prefix.path
+      end
+    end
+
+    flag :'no-clean'
+    command :purge, -1, 'Permanently remove one or more files or directories from the repository' do
+      repo = Repository.new @repo_path
+      args.uniq.each do |file|
+        repo.purge file, !given?(:'no-clean')
       end
     end
 

@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 require 'tmpdir'
 
@@ -233,6 +233,31 @@ module Silo
     # @return The preparation status of the backing Git repository
     def prepared?
       !(@git.tree/'.silo').nil?
+    end
+
+    # Purges a single file or the complete structure of a directory with the
+    # given path from the repository
+    #
+    # *WARNING*: This will cause a complete rewrite of the repository history
+    # and therefore deletes the data completely.
+    #
+    # @param [String] path The path of the file or directory to purge from the
+    #        repository
+    # @param [Boolean] prune Remove empty commits in the Git history
+    def purge(path, prune = true)
+      object = @git.tree/path
+      raise FileNotFoundError.new(path) if object.nil?
+      if object.is_a? Grit::Tree
+        (object.blobs + object.trees).each do |blob|
+          purge File.join(path, blob.basename), prune
+        end
+      else
+        params = ['-f', '--index-filter',
+                  "git rm --cached --ignore-unmatch #{path}"]
+        params << '--prune-empty' if prune
+        params << 'HEAD'
+        @git.git.filter_branch({}, *params)
+      end
     end
 
     # Removes the remote with the given name from this repository
