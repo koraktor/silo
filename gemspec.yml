@@ -15,8 +15,8 @@ require_paths: lib
 test_files:    test/**/test_*.rb
 
 dependencies:
-  grit:    ~> 2.3.0
-  rubikon: ~> 0.5.0
+  grit:    ~> 2.4.0
+  rubikon: ~> 0.5.3
 
 development_dependencies:
   ore:     ~> 0.3.0
