@@ -137,6 +137,14 @@ module Silo
       contents
     end
 
+    # Push the current state of the repository to each attached remote
+    # repository
+    #
+    # @see Remote::Git#push
+    def distribute
+      @remotes.each_value { |remote| remote.push }
+    end
+
     # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
     #
     # This executes a block of code while the environment variable

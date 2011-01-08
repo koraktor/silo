@@ -36,6 +36,11 @@ module Silo
       end
     end
 
+    command :distribute, 'Push repository contents to remote repositories' do
+      repo = Repository.new @repo_path
+      repo.distribute
+    end
+
     command :info, -1, 'Get information about repository contents' do
       repo = Repository.new @repo_path
       args.uniq.each do |path|
