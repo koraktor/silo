@@ -1,0 +1,59 @@
+---
+pages:
+  - name: Home
+    url:  ./
+  - name: Source
+    url:  http://github.com/koraktor/silo
+  - name: Issue Tracker
+    url:  http://github.com/koraktor/silo/issue
+---
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <link rel="stylesheet" href="stylesheets/main.css" type="text/css" />
+    <link rel="icon" href="graphics/silo-32x32.png" type="image/png" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Sebastian Staudt" />
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        (function() {
+            var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+            s.type = 'text/javascript';
+            s.async = true;
+            s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+            t.parentNode.insertBefore(s, t);
+        })();
+    /* ]]> */
+    </script>
+
+    <title>Silo – {{ page.title }}</title>
+  </head>
+  <body>
+    <ul id="menu">
+        {% for item in page.pages %}
+            <li>
+                {% if item.name == page.title %}
+                <span>{{ item.name }}</span>
+                {% else %}
+                <a href="{{ item.url }}">{{ item.name }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% include donate %}
+
+    <div id="content">
+      {{ content }}
+    </div>
+    <div id="footer">
+      {{ site.time | date: "%Y" }} &mdash; Sebastian Staudt
+    </div>
+  </body>
+</html>
+
+<!-- This page has been last updated on {{ site.time | date: "%m/%d/%Y" }} -->
