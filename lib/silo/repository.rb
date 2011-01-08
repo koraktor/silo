@@ -82,17 +82,18 @@ module Silo
     #        repository
     # @param [String] prefix An optional prefix where the file is stored inside
     #        the repository
-    def add(path, prefix = '.')
+    def add(path, prefix = nil)
+      prefix ||= '.'
       in_work_tree File.dirname(path) do
         index = @git.index
         index.read_tree 'HEAD'
         add = lambda do |f, p|
           file = File.basename f
-          pre  = File.join(p, file)
+          pre  = (p == '.') ? file : File.join(p, file)
           dir  = File.stat(f).directory?
           if dir
             Dir.entries(f)[2..-1].each do |child|
-              add.call File.join(file, child), pre
+              add.call File.join(f, child), pre
             end
           else
             index.add pre, IO.read(f)
