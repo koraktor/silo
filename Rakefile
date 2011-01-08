@@ -15,6 +15,13 @@ Rake::TestTask.new do |t|
 end
 
 begin
+  require 'ore/tasks'
+  Ore::Tasks.new
+rescue LoadError
+  $stderr.puts 'You need ore-tasks to build the gem. Install it using `gem install ore-tasks`.'
+end
+
+begin
   require 'yard'
 
   # Create a rake task +:doc+ to build the documentation using YARD
@@ -26,7 +33,7 @@ begin
 rescue LoadError
   desc 'Generate YARD Documentation (not available)'
   task :doc do
-    puts 'You need YARD to build the documentation. Install it using `gem install yard`.'
+    $stderr.puts 'You need YARD to build the documentation. Install it using `gem install yard`.'
   end
 end
 

@@ -19,9 +19,9 @@ dependencies:
   rubikon: ~> 0.5.3
 
 development_dependencies:
-  ore:     ~> 0.3.0
-  shoulda: ~> 2.11.3
-  yard:    ~> 0.6.1
+  ore-tasks: ~> 0.3.0
+  shoulda:   ~> 2.11.3
+  yard:      ~> 0.6.4
 
 requirements:
   - git >= 1.6
