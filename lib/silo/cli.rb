@@ -133,6 +133,14 @@ module Silo
       end
     end
 
+    command :rm => :remove
+    command :remove, -1, 'Remove one or more files or directories from the repository' do
+      repo = Repository.new @repo_path
+      args.uniq.each do |file|
+        repo.remove file
+      end
+    end
+
   end
 
 end

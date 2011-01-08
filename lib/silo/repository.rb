@@ -269,6 +269,35 @@ module Silo
       end
     end
 
+    # Removes a single file or the complete structure of a directory with the
+    # given path from the HEAD revision of the repository
+    #
+    # *NOTE*: The data won't be lost as it will be preserved in the history of
+    # the Git repository.
+    #
+    # @param [String] path The path of the file or directory to remove from the
+    #        repository
+    def remove(path)
+      index = @git.index
+      index.read_tree 'HEAD'
+      remove = lambda do |f|
+        dir  = File.stat(f).directory?
+        if dir
+          Dir.entries(f)[2..-1].each do |child|
+            remove.call File.join(f, child)
+          end
+        else
+          index.delete f
+        end
+        dir
+      end
+      dir = remove.call path
+      type = dir ? 'directory' : 'file'
+      commit_msg = "Removed #{type} #{path}"
+      index.commit commit_msg, @git.head.commit.sha
+    end
+    alias_method :rm, :remove
+
     # Removes the remote with the given name from this repository
     #
     # @param [String] name The name of the remote to remove
