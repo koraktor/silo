@@ -38,7 +38,13 @@ If you want to use the development code you should clone the Git repository:
 
 Silo searches for configuration files (`.silo`) in the current working
 directory, your home directory and your systems global configuration directory
-(i.e. /etc on Unix). Configuration files are expected in a Git-like format and
+(i.e. /etc on Unix).
+
+They can be used to set Silo-specific options globally or for single
+directories. That way you may have one general Silo repository for common
+backups and another Silo repository for e.g. work-related files.
+
+Configuration files are expected in a Git-like format and
 may contain the following sections and variables:
 
 * repository
@@ -52,15 +58,51 @@ may contain the following sections and variables:
 
 ### Initialize a repository
 
-    silo init [repository path]
+    $ silo init [repository path]
 
 ### Add files or directories to the repository
 
-    silo add file [file ...] [--prefix <prefix>]
+    $ silo add file [file ...] [--prefix <prefix>]
+
+The prefix allows to organize the files inside the repository.
 
 ### Restore files or directories from the repository
 
-    silo restore file [file ...] [--prefix <prefix>]
+    $ silo restore file [file ...] [--prefix <prefix>]
+
+The prefix is the directory inside your file system where the restored files
+will be saved.
+
+### Remove files or directories from the repository
+
+    $ silo remove file [file ...]
+    $ silo rm file [file ...]
+
+### Completely purge files or directories from the repository
+
+    $ silo purge file [file ...] [--no-clean]
+
+This will completely remove the specified files from the repository and thus
+reduce the required disk space.
+
+**WARNING**: There's no method built-in to Silo or Git to recover files after
+purging.
+
+The `--no-clean` flag will cause Git commits to persist even after their
+contents have been purged.
+
+### Manage remote repositories for mirrored backups
+
+    $ silo remote add name url
+    $ silo remote rm name
+
+Add or remove a remote repository with the specified name. When adding a remote
+repository the specified location may be given as any location Git understands
+– including file system paths.
+
+### Distributed the state of your repository to all mirror repositories
+
+    $ silo distribute
 
 ## Using the Ruby API
 
@@ -75,7 +117,7 @@ LICENSE file.
 
 ## Credits
 
-* Sebastian Staudt &ndash; koraktor(at)gmail.com
+* Sebastian Staudt – koraktor(at)gmail.com
 
 ## See Also
 
