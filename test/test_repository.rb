@@ -1,8 +1,9 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
+require 'pathname'
 require 'tmpdir'
 
 require 'helper'
@@ -16,16 +17,19 @@ class TestRepository < Test::Unit::TestCase
       Dir.rmdir @dir
     end
 
-    should 'contain a bare Git repository prepared for Kaartong by default' do
-      rep = Repository.new @dir
-      assert rep.git.is_a? Grit::Repo
-      assert rep.prepared?
+    should 'contain a bare Git repository prepared for Silo by default' do
+      repo = Repository.new @dir
+      assert repo.git.is_a? Grit::Repo
+      assert repo.prepared?
+      assert_equal 1, repo.git.commits.size
+      assert_equal 'Enabled Silo for this repository', repo.git.commits.first.message
     end
 
     should 'contain a plain Git repository when option :prepare is false' do
-      rep = Repository.new @dir, :prepare => false
-      assert rep.git.is_a? Grit::Repo
-      assert !rep.prepared?
+      repo = Repository.new @dir, :prepare => false
+      assert repo.git.is_a? Grit::Repo
+      assert !repo.prepared?
+      assert_equal 0, repo.git.commits.size
     end
 
     should 'fail when option :create is false and the target directory does not exist' do
@@ -65,6 +69,7 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'be prepared' do
+      assert_equal 1, @repo.git.commits.size
       assert @repo.prepared?
     end
 
@@ -76,6 +81,68 @@ class TestRepository < Test::Unit::TestCase
 
     teardown do
       FileUtils.rm_rf [@repo_dir, '.silo'], :secure => true
+    end
+
+  end
+
+  context 'Backing up and restoring' do
+
+    setup do
+      @data_dir = Pathname.new(File.expand_path File.dirname(__FILE__)) + 'data'
+      @repo_dir = Dir.mktmpdir
+      @repo     = Repository.new @repo_dir
+    end
+
+    should 'save single files correctly' do
+      @repo.add(@data_dir + 'file1')
+      @repo.add(@data_dir + 'file2')
+
+      assert_equal 3, @repo.git.commits.size
+      assert (@repo.git.tree/('file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('file2')).is_a?(Grit::Blob)
+      assert_equal "Added file #{@data_dir + 'file1'} into '.'", @repo.git.commits[1].message
+      assert_equal "Added file #{@data_dir + 'file2'} into '.'", @repo.git.commits[2].message
+    end
+
+    should 'save directory trees correctly' do
+      @repo.add @data_dir
+
+      assert_equal 2, @repo.git.commits.size
+      assert_equal "Added directory #{@data_dir} into '.'", @repo.git.commits[1].message
+      assert (@repo.git.tree/('data/file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('data/file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('data/subdir1')).is_a?(Grit::Tree)
+      assert (@repo.git.tree/('data/subdir1/file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('data/subdir2')).is_a?(Grit::Tree)
+      assert (@repo.git.tree/('data/subdir2/file2')).is_a?(Grit::Blob)
+    end
+
+    should 'save single files correctly into a prefix directory' do
+      @repo.add(@data_dir + 'file1', 'prefix')
+      @repo.add(@data_dir + 'file2', 'prefix')
+
+      assert_equal 3, @repo.git.commits.size
+      assert (@repo.git.tree/('prefix/file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/file2')).is_a?(Grit::Blob)
+      assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
+      assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[2].message
+    end
+
+    should 'save directory trees correctly into a prefix directory' do
+      @repo.add @data_dir, 'prefix'
+
+      assert_equal 2, @repo.git.commits.size
+      assert_equal "Added directory #{@data_dir} into 'prefix'", @repo.git.commits[1].message
+      assert (@repo.git.tree/('prefix/data/file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/data/file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/data/subdir1')).is_a?(Grit::Tree)
+      assert (@repo.git.tree/('prefix/data/subdir1/file1')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/data/subdir2')).is_a?(Grit::Tree)
+      assert (@repo.git.tree/('prefix/data/subdir2/file2')).is_a?(Grit::Blob)
+    end
+
+    teardown do
+      FileUtils.rm_rf @repo_dir, :secure => true
     end
 
   end
