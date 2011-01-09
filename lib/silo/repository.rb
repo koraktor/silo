@@ -22,6 +22,9 @@ module Silo
     # @return [Grit::Repo] The Grit object to access the Git repository
     attr_reader :git
 
+    # @return [String] The file system path of the repository
+    attr_reader :path
+
     # Creates a new repository instance on the given path
     #
     # @param [Hash] options A hash of options
