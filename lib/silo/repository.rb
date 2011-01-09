@@ -42,28 +42,29 @@ module Silo
         :prepare => true
       }.merge options
 
-      if File.exist?(path)
-        if Dir.new(path).count > 2
-          unless File.exist?(File.join(path, 'HEAD')) &&
-                 File.stat(File.join(path, 'objects')).directory? &&
-                 File.stat(File.join(path, 'refs')).directory?
-            raise Grit::InvalidGitRepositoryError.new(path)
+      @path = File.expand_path path
+
+      if File.exist?(@path)
+        if Dir.new(@path).count > 2
+          unless File.exist?(File.join(@path, 'HEAD')) &&
+                 File.stat(File.join(@path, 'objects')).directory? &&
+                 File.stat(File.join(@path, 'refs')).directory?
+            raise Grit::InvalidGitRepositoryError.new(@path)
           end
         end
-        @git = Grit::Repo.new(path, { :is_bare => true })
+        @git = Grit::Repo.new(@path, { :is_bare => true })
       else
         if options[:create]
-          @git = Grit::Repo.init_bare(path, {}, { :is_bare => true })
+          @git = Grit::Repo.init_bare(@path, {}, { :is_bare => true })
         else
-          raise Grit::NoSuchPathError.new(path)
+          raise Grit::NoSuchPathError.new(@path)
         end
       end
 
       if !prepared? && @git.commit_count > 0
-        raise InvalidRepositoryError.new(path)
+        raise InvalidRepositoryError.new(@path)
       end
 
-      @path    = File.expand_path path
       @remotes = {}
 
       load_git_remotes
@@ -83,6 +84,7 @@ module Silo
     # @param [String] prefix An optional prefix where the file is stored inside
     #        the repository
     def add(path, prefix = nil)
+      path   = File.expand_path path
       prefix ||= '.'
       in_work_tree File.dirname(path) do
         index = @git.index
@@ -125,6 +127,7 @@ module Silo
     #         path
     def contents(path = '.')
       contents = []
+      path     = File.expand_path path
 
       object = (path == '.') ? @git.tree : @git.tree/path
       contents << path unless path == '.' || object.nil?
@@ -173,7 +176,8 @@ module Silo
     # @return [Hash<Symbol, Object>] Information about the requested file or
     #         directory.
     def info(path)
-      info = {}
+      info   = {}
+      path   = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
 
@@ -230,6 +234,7 @@ module Silo
     # @return [Array<Grit::Commit>] The commit history for the repository or
     #         given path
     def history(path = nil)
+      path   = File.expand_path path
       params = ['--format=raw']
       params += ['--', path] unless path.nil?
       output = @git.git.log({}, *params)
@@ -254,6 +259,7 @@ module Silo
     #        repository
     # @param [Boolean] prune Remove empty commits in the Git history
     def purge(path, prune = true)
+      path = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
       if object.is_a? Grit::Tree
@@ -278,6 +284,7 @@ module Silo
     # @param [String] path The path of the file or directory to remove from the
     #        repository
     def remove(path)
+      path  = File.expand_path path
       index = @git.index
       index.read_tree 'HEAD'
       remove = lambda do |f|
@@ -316,6 +323,7 @@ module Silo
     #        the repository
     # @param [String] prefix An optional prefix where the file is restored
     def restore(path, prefix = '.')
+      path   = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
       if object.is_a? Grit::Tree
