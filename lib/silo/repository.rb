@@ -44,13 +44,11 @@ module Silo
 
       @path = File.expand_path path
 
-      if File.exist?(@path)
-        if Dir.new(@path).count > 2
-          unless File.exist?(File.join(@path, 'HEAD')) &&
-                 File.stat(File.join(@path, 'objects')).directory? &&
-                 File.stat(File.join(@path, 'refs')).directory?
-            raise Grit::InvalidGitRepositoryError.new(@path)
-          end
+      if File.exist?(@path) && Dir.new(@path).count > 2
+        unless File.exist?(File.join(@path, 'HEAD')) &&
+               File.stat(File.join(@path, 'objects')).directory? &&
+               File.stat(File.join(@path, 'refs')).directory?
+          raise Grit::InvalidGitRepositoryError.new(@path)
         end
         @git = Grit::Repo.new(@path, { :is_bare => true })
       else
