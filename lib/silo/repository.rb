@@ -128,7 +128,6 @@ module Silo
     #         path
     def contents(path = '.')
       contents = []
-      path     = File.expand_path path
 
       object = (path == '.') ? @git.tree : @git.tree/path
       contents << path unless path == '.' || object.nil?
@@ -178,7 +177,6 @@ module Silo
     #         directory.
     def info(path)
       info   = {}
-      path   = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
 
@@ -235,7 +233,6 @@ module Silo
     # @return [Array<Grit::Commit>] The commit history for the repository or
     #         given path
     def history(path = nil)
-      path   = File.expand_path path
       params = ['--format=raw']
       params += ['--', path] unless path.nil?
       output = @git.git.log({}, *params)
@@ -260,7 +257,6 @@ module Silo
     #        repository
     # @param [Boolean] prune Remove empty commits in the Git history
     def purge(path, prune = true)
-      path = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
       if object.is_a? Grit::Tree
@@ -285,7 +281,6 @@ module Silo
     # @param [String] path The path of the file or directory to remove from the
     #        repository
     def remove(path)
-      path  = File.expand_path path
       index = @git.index
       index.read_tree 'HEAD'
       remove = lambda do |f|
@@ -324,7 +319,6 @@ module Silo
     #        the repository
     # @param [String] prefix An optional prefix where the file is restored
     def restore(path, prefix = '.')
-      path   = File.expand_path path
       object = @git.tree/path
       raise FileNotFoundError.new(path) if object.nil?
       if object.is_a? Grit::Tree
@@ -333,7 +327,8 @@ module Silo
           restore File.join(path, blob.basename), prefix
         end
       else
-        file = File.new File.join(prefix, path), 'w'
+        file_path = File.expand_path File.join(prefix, File.basename(path))
+        file = File.new file_path, 'w'
         file.write object.data
         file.close
       end
