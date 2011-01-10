@@ -3,10 +3,10 @@
 #
 # Copyright (c) 2010-2011, Sebastian Staudt
 
-require 'pathname'
 require 'tmpdir'
 
 require 'helper'
+require 'core_ext/pathname'
 
 class TestRepository < Test::Unit::TestCase
 
@@ -88,18 +88,21 @@ class TestRepository < Test::Unit::TestCase
   context 'Backing up and restoring' do
 
     setup do
-      @data_dir = Pathname.new(File.expand_path File.dirname(__FILE__)) + 'data'
-      @repo_dir = Dir.mktmpdir
-      @repo     = Repository.new @repo_dir
+      @data_dir   = Pathname.new(File.dirname(__FILE__))/'data'
+      @repo       = Repository.new Dir.mktmpdir
+      @old_pwd    = Dir.pwd
+      @target_dir = Pathname.new Dir.mktmpdir
+      @work_dir   = Pathname.new Dir.mktmpdir
+      Dir.chdir @work_dir
     end
 
     should 'save single files correctly' do
-      @repo.add(@data_dir + 'file1')
-      @repo.add(@data_dir + 'file2')
+      @repo.add @data_dir/'file1'
+      @repo.add @data_dir/'file2'
 
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/('file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('file2')).is_a? Grit::Blob
       assert_equal "Added file #{@data_dir + 'file1'} into '.'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into '.'", @repo.git.commits[2].message
     end
@@ -109,21 +112,21 @@ class TestRepository < Test::Unit::TestCase
 
       assert_equal 2, @repo.git.commits.size
       assert_equal "Added directory #{@data_dir} into '.'", @repo.git.commits[1].message
-      assert (@repo.git.tree/('data/file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('data/file2')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('data/subdir1')).is_a?(Grit::Tree)
-      assert (@repo.git.tree/('data/subdir1/file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('data/subdir2')).is_a?(Grit::Tree)
-      assert (@repo.git.tree/('data/subdir2/file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('data/file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('data/file2')).is_a? Grit::Blob
+      assert (@repo.git.tree/('data/subdir1')).is_a? Grit::Tree
+      assert (@repo.git.tree/('data/subdir1/file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('data/subdir2')).is_a? Grit::Tree
+      assert (@repo.git.tree/('data/subdir2/file2')).is_a? Grit::Blob
     end
 
     should 'save single files correctly into a prefix directory' do
-      @repo.add(@data_dir + 'file1', 'prefix')
-      @repo.add(@data_dir + 'file2', 'prefix')
+      @repo.add @data_dir/'file1', 'prefix'
+      @repo.add @data_dir/'file2', 'prefix'
 
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/('prefix/file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('prefix/file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('prefix/file2')).is_a? Grit::Blob
       assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[2].message
     end
@@ -133,16 +136,67 @@ class TestRepository < Test::Unit::TestCase
 
       assert_equal 2, @repo.git.commits.size
       assert_equal "Added directory #{@data_dir} into 'prefix'", @repo.git.commits[1].message
-      assert (@repo.git.tree/('prefix/data/file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('prefix/data/file2')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('prefix/data/subdir1')).is_a?(Grit::Tree)
-      assert (@repo.git.tree/('prefix/data/subdir1/file1')).is_a?(Grit::Blob)
-      assert (@repo.git.tree/('prefix/data/subdir2')).is_a?(Grit::Tree)
-      assert (@repo.git.tree/('prefix/data/subdir2/file2')).is_a?(Grit::Blob)
+      assert (@repo.git.tree/('prefix/data/file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('prefix/data/file2')).is_a? Grit::Blob
+      assert (@repo.git.tree/('prefix/data/subdir1')).is_a? Grit::Tree
+      assert (@repo.git.tree/('prefix/data/subdir1/file1')).is_a? Grit::Blob
+      assert (@repo.git.tree/('prefix/data/subdir2')).is_a? Grit::Tree
+      assert (@repo.git.tree/('prefix/data/subdir2/file2')).is_a? Grit::Blob
+    end
+
+    should 'restore single files correctly' do
+      @repo.add @data_dir
+      @repo.add @data_dir/'file1'
+      @repo.restore 'file1'
+      @repo.restore 'data/file2', @target_dir
+
+      assert File.exist? @work_dir/'file1'
+      assert File.exist? @target_dir/'file2'
+    end
+
+    should 'restore directory trees correctly' do
+      @repo.add @data_dir
+      @repo.restore 'data'
+      @repo.restore 'data/subdir1', @target_dir
+
+      assert File.exist? @work_dir/'data/file1'
+      assert File.exist? @work_dir/'data/file2'
+      assert File.exist? @work_dir/'data/subdir1/file1'
+      assert File.exist? @work_dir/'data/subdir2/file2'
+
+      assert File.exist? @target_dir/'subdir1'
+      assert File.exist? @target_dir/'subdir1/file1'
+    end
+
+    should 'purge files and directories correctly' do
+      @repo.add @data_dir
+      @repo.add @data_dir/'file1'
+
+      @repo.purge 'data/file1'
+      assert_equal 3, @repo.git.commits.size
+      assert (@repo.git.tree/'data/file1').nil?
+
+      @repo.purge 'data'
+      assert_equal 2, @repo.git.commits.size
+      assert (@repo.git.tree/'data').nil?
+
+      @repo.purge 'file1'
+      assert_equal 1, @repo.git.commits.size
+      assert (@repo.git.tree/'file1').nil?
+
+      @repo.add @data_dir
+      @repo.add @data_dir/'file1'
+
+      @repo.purge 'data', false
+      @repo.purge 'file1', false
+      assert_equal 3, @repo.git.commits.size
+      assert (@repo.git.tree/'data').nil?
+      assert (@repo.git.tree/'file1').nil?
     end
 
     teardown do
-      FileUtils.rm_rf @repo_dir, :secure => true
+      Dir.chdir @old_pwd
+      FileUtils.rm_rf [@repo.path, @work_dir, @target_dir], :secure => true
     end
 
   end
