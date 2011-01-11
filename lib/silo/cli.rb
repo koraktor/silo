@@ -75,7 +75,7 @@ module Silo
     flag :r
     command :list, 0..-1, 'List the contents of a repository' do
       args.uniq!
-      args[0] ||= '.'
+      args[0] ||= nil
       contents = []
       args.each do |path|
         contents |=  repo.contents(path)

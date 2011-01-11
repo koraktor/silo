@@ -126,14 +126,14 @@ module Silo
     # @param [String] path The path to search for inside the repository
     # @return [Array<String>] All files and directories found in the specidied
     #         path
-    def contents(path = '.')
+    def contents(path = nil)
       contents = []
 
-      object = (path == '.') ? @git.tree : @git.tree/path
-      contents << path unless path == '.' || object.nil?
+      object = path.nil? ? @git.tree : @git.tree/path
+      contents << path unless path.nil? || object.nil?
       if object.is_a? Grit::Tree
         (object.blobs + object.trees).each do |obj|
-          contents += contents ((path == '.') ? obj.basename : File.join(path, obj.basename))
+          contents += contents(path.nil? ? obj.basename : File.join(path, obj.basename))
         end
       end
 
