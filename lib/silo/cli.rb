@@ -15,15 +15,23 @@ module Silo
   # @since 0.1.0
   class CLI < Rubikon::Application::Base
 
+    attr_writer :repo
+
     set :config_file, '.silo'
     set :config_format, :ini
     set :help_banner, 'Usage: silo'
 
+    global_option :repository, [:repo_path] do
+      self.repo = Repository.new repo_path
+    end
+
     pre_execute do
-      if config.empty?
-        puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
-      else
-        @repo = Repository.new config['repository']['path']
+      if @repo.nil?
+        if config.empty?
+          puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
+        else
+          self.repo = Repository.new config['repository']['path']
+        end
       end
     end
 
