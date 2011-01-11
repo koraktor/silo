@@ -20,7 +20,11 @@ module Silo
     set :help_banner, 'Usage: silo'
 
     pre_execute do
-      @repo_path = config['repository']['path']
+      if config.empty?
+        puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
+      else
+        @repo = Repository.new config['repository']['path']
+      end
     end
 
     default do
@@ -30,19 +34,16 @@ module Silo
 
     option :prefix, [:path]
     command :add, -1, 'Store one or more files in the repository' do
-      repo = Repository.new @repo_path
       args.uniq.each do |file|
         repo.add file, prefix.path
       end
     end
 
     command :distribute, 'Push repository contents to remote repositories' do
-      repo = Repository.new @repo_path
       repo.distribute
     end
 
     command :info, -1, 'Get information about repository contents' do
-      repo = Repository.new @repo_path
       args.uniq.each do |path|
         info = repo.info path
         puts '' unless path == args.first
@@ -75,10 +76,9 @@ module Silo
     command :list, 0..-1, 'List the contents of a repository' do
       args.uniq!
       args[0] ||= '.'
-      repo = Repository.new @repo_path
       contents = []
       args.each do |path|
-        contents |= repo.contents(path)
+        contents |=  repo.contents(path)
       end
 
       raise FileNotFoundError.new(args[0]) if contents.empty?
@@ -119,7 +119,6 @@ module Silo
 
     option :prefix, [:path]
     command :restore, -1, 'Restore one or more files or directories from the repository' do
-      repo = Repository.new @repo_path
       args.uniq.each do |file|
         repo.restore file, prefix.path
       end
@@ -127,7 +126,6 @@ module Silo
 
     flag :'no-clean'
     command :purge, -1, 'Permanently remove one or more files or directories from the repository' do
-      repo = Repository.new @repo_path
       args.uniq.each do |file|
         repo.purge file, !given?(:'no-clean')
       end
@@ -135,10 +133,18 @@ module Silo
 
     command :rm => :remove
     command :remove, -1, 'Remove one or more files or directories from the repository' do
-      repo = Repository.new @repo_path
       args.uniq.each do |file|
         repo.remove file
       end
+    end
+
+    # Returns the current repository
+    #
+    # @return [Repository] The currently configured Silo repository
+    # @raise [RuntimeError] if no repository is configured
+    def repo
+      raise 'No repository configured.' if @repo.nil?
+      @repo
     end
 
   end
