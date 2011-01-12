@@ -24,6 +24,10 @@ module Silo
 
     # @return [String] The file system path of the repository
     attr_reader :path
+    
+    # @return [Hash<Remote::Base>] The remote repositories configured for this
+    #         repository
+    attr_reader :remotes
 
     # Creates a new repository instance on the given path
     #
@@ -67,8 +71,7 @@ module Silo
       end
 
       @remotes = {}
-
-      load_git_remotes
+      @remotes.merge! git_remotes
 
       prepare if options[:prepare] && !prepared?
     end
@@ -204,11 +207,13 @@ module Silo
     # Loads remotes from the backing Git repository's configuration
     #
     # @see Remote::Git
-    def load_git_remotes
+    def git_remotes
+      remotes = {}
       @git.git.remote.split.each do |remote|
         url = @git.git.config({}, '--get', "remote.#{remote}.url").strip
-        @remotes[remote] = Remote::Git.new(self, remote, url)
+        remotes[remote] = Remote::Git.new(self, remote, url)
       end
+      remotes
     end
 
     # Prepares the Git repository backing this Silo repository for use with

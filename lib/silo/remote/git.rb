@@ -1,7 +1,9 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
+
+require 'silo/remote/base'
 
 module Silo
 
@@ -11,10 +13,7 @@ module Silo
     # repository backing the Silo repository
     #
     # @see Repository
-    class Git
-
-      # @return [String] The name of this remote
-      attr_reader :name
+    class Git < Base
 
       # Creates a new Git remote
       #
@@ -23,9 +22,9 @@ module Silo
       # @param [String] url The URL of the remote Git repository. This may use
       #        any protocol supported by Git (+git:+, +file:+, +http(s):+)
       def initialize(repo, name, url)
-        @name = name
-        @repo = repo
-        @url  = url
+        super repo, name
+
+        @url = url
       end
 
       # Adds this remote as a mirror to the backing Git repository
