@@ -83,10 +83,11 @@ module Silo
       paths = self.paths || [nil]
       contents = []
       paths.each do |path|
-        contents |=  repo.contents(path)
+        new_contents = repo.contents path
+        puts "y{Warning:} File '#{path}' does not exist in the repository." if new_contents.empty?
+        contents |= new_contents
       end
 
-      raise FileNotFoundError.new(args[0]) if contents.empty?
       contents.reverse! if r.given?
 
       unless l.given?
