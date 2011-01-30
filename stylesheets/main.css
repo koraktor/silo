@@ -12,7 +12,7 @@ a {
 }
 
 a:link:hover, a:visited:hover {
-  color:           #000000;
+  color:           #666666;
   text-decoration: underline;
 }
 
@@ -85,6 +85,14 @@ h2 {
   color:         #4aa738;
   font-family:   Monospace;
   text-shadow:   #333333 1px 1px 1px;
+}
+
+pre {
+  background: #d3e0bb;
+  border:     1px solid #2d6622;
+  margin:     0px auto;
+  padding:    1px 10px;
+  width:      90%;
 }
 
 ul {
