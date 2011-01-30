@@ -11,6 +11,9 @@ homepage: http://koraktor.github.com/silo
 has_yard: true
 
 executables:   silo
+extra_doc_files:
+ - Changelog.md
+ - LICENSE
 require_paths: lib
 test_files:    test/**/test_*.rb
 
