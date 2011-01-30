@@ -89,13 +89,13 @@ module Silo
     #        the repository
     def add(path, prefix = nil)
       path   = File.expand_path path
-      prefix ||= '.'
+      prefix ||= '/'
       in_work_tree File.dirname(path) do
         index = @git.index
         index.read_tree 'HEAD'
         add = lambda do |f, p|
           file = File.basename f
-          pre  = (p == '.') ? file : File.join(p, file)
+          pre  = (p == '/') ? file : File.join(p, file)
           dir  = File.stat(f).directory?
           if dir
             Dir.entries(f)[2..-1].each do |child|
