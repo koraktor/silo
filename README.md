@@ -49,12 +49,18 @@ may contain the following sections and variables:
 
 * repository
 
-  * path &ndash; The path of the default repository to use
+  * path – The path of the default repository to use
+  * prefix – The path inside the repository to store files to per default
 
 #### Sample
 
     [repository]
-      path = /some/repository
+      path   = /Users/jondoe/backup.git
+      prefix = work
+
+This would usually save and restore files to and from
+`/Users/jondoe/backup.git` and save files into the directory `work` inside the
+repository.
 
 ### Initialize a repository
 
@@ -93,6 +99,7 @@ contents have been purged.
 
 ### Manage remote repositories for mirrored backups
 
+    $ silo remote [-v]
     $ silo remote add name url
     $ silo remote rm name
 
@@ -100,9 +107,20 @@ Add or remove a remote repository with the specified name. When adding a remote
 repository the specified location may be given as any location Git understands
 – including file system paths.
 
-### Distributed the state of your repository to all mirror repositories
+### Distribute the state of your repository to all mirror repositories
 
     $ silo distribute
+
+### List repository contents
+
+    $ silo list [file ...] [-l] [-r]
+
+The `-l` flag will list each directory and file in a separate line, `-r` will
+reverse the listing.
+
+### Display info about repository contents
+
+    $ silo info [file ...] [-v]
 
 ## Using the Ruby API
 
