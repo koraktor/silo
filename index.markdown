@@ -29,6 +29,15 @@ repository, bypassing the automatisms tailored for source code histories.
 - [Grit][3] – a Ruby API for Git
 - [Rubikon][4] – a Ruby framework for console applications
 
+## Installation
+
+Silo can be easily installed using RubyGems:
+
+    $ gem install silo
+
+You're now ready to use Silo. See the [Wiki page on usage][8] for more
+information.
+
 ## Problems?
 
 - If you think you found an error in Silo, please check the [issue tracker][5]
@@ -48,3 +57,4 @@ of the new BSD License. A copy of this license can be found [here][7].
   [5]: https://github.com/koraktor/silo/issues
   [6]: https://github.com/koraktor
   [7]: license.html
+  [8]: https://github.com/koraktor/silo/wiki/Usage
