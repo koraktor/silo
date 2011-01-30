@@ -324,16 +324,21 @@ module Silo
     #        the repository
     # @param [String] prefix An optional prefix where the file is restored
     def restore(path, prefix = '.')
-      object = @git.tree/path
+      if path == '.'
+        path = nil
+        object = @git.tree
+      else
+        object = @git.tree/path
+      end
       raise FileNotFoundError.new(path) if object.nil?
 
-      prefix    = File.expand_path prefix
+      prefix = File.expand_path prefix
       FileUtils.mkdir_p prefix unless File.exists? prefix
 
       file_path = File.join prefix, File.basename(path)
 
       if object.is_a? Grit::Tree
-        FileUtils.mkdir file_path
+        FileUtils.mkdir file_path unless File.directory? file_path
         (object.blobs + object.trees).each do |obj|
           restore File.join(path, obj.basename), file_path
         end
