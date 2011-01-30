@@ -10,10 +10,10 @@ module Silo
     # This class represents a standard Git remote attached to the Git
     # repository backing the Silo repository
     class Base
-    
+
       # @return [String] The name of this remote
       attr_reader :name
-      
+
       # @return [String] The URL of this remote
       attr_reader :url
 
@@ -25,9 +25,9 @@ module Silo
         @name = name
         @repo = repo
       end
-    
+
     end
-    
+
   end
-  
+
 end

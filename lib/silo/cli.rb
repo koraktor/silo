@@ -15,6 +15,9 @@ module Silo
   # @since 0.1.0
   class CLI < Rubikon::Application::Base
 
+    # Changes the current repository
+    #
+    # @see #repo
     attr_writer :repo
 
     set :config_file, '.silo'

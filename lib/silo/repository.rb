@@ -24,7 +24,7 @@ module Silo
 
     # @return [String] The file system path of the repository
     attr_reader :path
-    
+
     # @return [Hash<Remote::Base>] The remote repositories configured for this
     #         repository
     attr_reader :remotes
