@@ -131,7 +131,7 @@ module Silo
     option :prefix, 'The prefix path to store the files to', :path
     command :restore, 'Restore one or more files or directories from the repository', :files => :remainder do
       files.uniq.each do |file|
-        repo.restore file, prefix.path
+        repo.restore file, prefix.path || '.'
       end
     end
 
