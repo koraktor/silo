@@ -16,7 +16,7 @@ test_files:    test/**/test_*.rb
 
 dependencies:
   grit:    ~> 2.4.0
-  rubikon: ~> 0.5.3
+  rubikon: ~> 0.6.0
 
 development_dependencies:
   ore-tasks: ~> 0.3.0

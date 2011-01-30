@@ -21,7 +21,7 @@ module Silo
     set :config_format, :ini
     set :help_banner, 'Usage: silo'
 
-    global_option :repository, [:repo_path] do
+    global_option :repository, :repo_path do
       self.repo = Repository.new repo_path
     end
 
@@ -35,14 +35,14 @@ module Silo
       end
     end
 
-    default do
+    default '<hidden>' do
       puts "This is Silo. A Git-based backup utility.\n\n"
       call :help
     end
 
-    option :prefix, [:path]
-    command :add, -1, 'Store one or more files in the repository' do
-      args.uniq.each do |file|
+    option :prefix, 'The prefix path inside the repository to store the files to', :path
+    command :add, 'Store one or more files in the repository', :files => :remainder do
+      files.uniq.each do |file|
         repo.add file, prefix.path
       end
     end
@@ -51,8 +51,8 @@ module Silo
       repo.distribute
     end
 
-    command :info, -1, 'Get information about repository contents' do
-      args.uniq.each do |path|
+    command :info, 'Get information about repository contents', :files => :remainder do
+      files.uniq.each do |path|
         info = repo.info path
         puts '' unless path == args.first
         puts "#{info[:type] == :blob ? 'File' : 'Directory'}: #{info[:path]}"
@@ -73,19 +73,18 @@ module Silo
       end
     end
 
-    command :init, 0..1, 'Initialize a Silo repository' do
-      args[0] ||= File.expand_path('.')
-      puts "Initializing Silo repository in #{File.expand_path args[0]}..."
-      Repository.new args[0]
+    command :init, 'Initialize a Silo repository', :path => :optional do
+      path = File.expand_path(path || '.')
+      puts "Initializing Silo repository in #{path}..."
+      Repository.new path
     end
 
     flag :l
     flag :r
-    command :list, 0..-1, 'List the contents of a repository' do
-      args.uniq!
-      args[0] ||= nil
+    command :list, 'List the contents of a repository', :paths => [ :remainder, :optional ] do
+      paths = self.paths || [nil]
       contents = []
-      args.each do |path|
+      paths.each do |path|
         contents |=  repo.contents(path)
       end
 
@@ -101,22 +100,22 @@ module Silo
       end
     end
 
-    command :remote, 0..-1, 'Add or remove remote repositories' do
+    command :remote, 'Add or remove remote repositories', { :action => ['add', 'rm', :optional], :name => :optional, :url => :optional } do
       repo = Repository.new @repo_path
       usage = lambda do
         puts 'usage: silo remote add <name> <url>'
         puts '   or: silo remote rm <name>'
       end
-      case args[0]
+      case action
         when 'add'
-          if args.size == 3
-            repo.add_remote args[1], args[2]
+          if url.nil?
+            repo.add_remote name, url
           else
             usage.call
           end
         when 'rm'
-          if args.size == 2
-            repo.remove_remote args[1]
+          unless url.nil?
+            repo.remove_remote name
           else
             usage.call
           end
@@ -125,23 +124,23 @@ module Silo
       end
     end
 
-    option :prefix, [:path]
-    command :restore, -1, 'Restore one or more files or directories from the repository' do
-      args.uniq.each do |file|
+    option :prefix, 'The prefix path to store the files to', :path
+    command :restore, 'Restore one or more files or directories from the repository', :files => :remainder do
+      files.uniq.each do |file|
         repo.restore file, prefix.path
       end
     end
 
-    flag :'no-clean'
-    command :purge, -1, 'Permanently remove one or more files or directories from the repository' do
-      args.uniq.each do |file|
+    flag :'no-clean', "Don't remove empty commits from the Git history"
+    command :purge, 'Permanently remove one or more files or directories from the repository', :files => :remainder do
+      files.uniq.each do |file|
         repo.purge file, !given?(:'no-clean')
       end
     end
 
     command :rm => :remove
-    command :remove, -1, 'Remove one or more files or directories from the repository' do
-      args.uniq.each do |file|
+    command :remove, 'Remove one or more files or directories from the repository', :files => :remainder do
+      files.uniq.each do |file|
         repo.remove file
       end
     end
