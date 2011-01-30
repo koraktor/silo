@@ -132,7 +132,7 @@ module Silo
     def contents(path = nil)
       contents = []
 
-      object = path.nil? ? @git.tree : @git.tree/path
+      object = find_object path
       contents << path unless path.nil? || object.nil?
       if object.is_a? Grit::Tree
         (object.blobs + object.trees).each do |obj|
@@ -180,8 +180,7 @@ module Silo
     #         directory.
     def info(path)
       info   = {}
-      object = @git.tree/path
-      raise FileNotFoundError.new(path) if object.nil?
+      object = object! path
 
       info[:history] = history path
       info[:mode]    = object.mode
@@ -244,6 +243,27 @@ module Silo
       Grit::Commit.list_from_string @git, output
     end
 
+    # Returns the object (tree or blob) at the given path inside the repository
+    #
+    # @param [String] path The path of the object in the repository
+    # @raise [FileNotFoundError] if no object with the given path exists
+    # @return [Grit::Blob, Grit::Tree] The object at the given path
+    def find_object(path = '/')
+      (path == '/') ? @git.tree : @git.tree/path
+    end
+
+    # Returns the object (tree or blob) at the given path inside the repository
+    # or fail if it does not exist
+    #
+    # @param (see #find_object)
+    # @raise [FileNotFoundError] if no object with the given path exists
+    # @return (see #find_object)
+    def object!(path)
+      object = find_object path
+      raise FileNotFoundError.new(path) if object.nil?
+      object
+    end
+
     # Return whether the Git repository backing this Silo repository has
     # already been prepared for use with Silo
     #
@@ -262,8 +282,7 @@ module Silo
     #        repository
     # @param [Boolean] prune Remove empty commits in the Git history
     def purge(path, prune = true)
-      object = @git.tree/path
-      raise FileNotFoundError.new(path) if object.nil?
+      object = object! path
       if object.is_a? Grit::Tree
         (object.blobs + object.trees).each do |blob|
           purge File.join(path, blob.basename), prune
@@ -324,14 +343,7 @@ module Silo
     #        the repository
     # @param [String] prefix An optional prefix where the file is restored
     def restore(path, prefix = '.')
-      if path == '.'
-        path = nil
-        object = @git.tree
-      else
-        object = @git.tree/path
-      end
-      raise FileNotFoundError.new(path) if object.nil?
-
+      object = object! path
       prefix = File.expand_path prefix
       FileUtils.mkdir_p prefix unless File.exists? prefix
 
