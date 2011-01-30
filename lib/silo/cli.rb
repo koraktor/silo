@@ -32,6 +32,7 @@ module Silo
       if config.empty?
         puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
       else
+        @prefix = config['repository']['prefix']
         self.repo = Repository.new config['repository']['path']
       end
     end
@@ -44,7 +45,7 @@ module Silo
     option :prefix, 'The prefix path inside the repository to store the files to', :path
     command :add, 'Store one or more files in the repository', :files => :remainder do
       files.uniq.each do |file|
-        repo.add file, prefix.path
+        repo.add file, prefix.path || @prefix
       end
     end
 
