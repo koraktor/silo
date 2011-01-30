@@ -26,12 +26,10 @@ module Silo
     end
 
     pre_execute do
-      if @repo.nil?
-        if config.empty?
-          puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
-        else
-          self.repo = Repository.new config['repository']['path']
-        end
+      if config.empty?
+        puts "y{Warning:} Configuration file(s) could not be loaded.\n\n"
+      else
+        self.repo = Repository.new config['repository']['path']
       end
     end
 
