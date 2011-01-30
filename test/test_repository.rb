@@ -103,15 +103,15 @@ class TestRepository < Test::Unit::TestCase
       assert_equal 3, @repo.git.commits.size
       assert (@repo.git.tree/('file1')).is_a? Grit::Blob
       assert (@repo.git.tree/('file2')).is_a? Grit::Blob
-      assert_equal "Added file #{@data_dir + 'file1'} into '.'", @repo.git.commits[1].message
-      assert_equal "Added file #{@data_dir + 'file2'} into '.'", @repo.git.commits[2].message
+      assert_equal "Added file #{@data_dir + 'file1'} into '/'", @repo.git.commits[1].message
+      assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[2].message
     end
 
     should 'save directory trees correctly' do
       @repo.add @data_dir
 
       assert_equal 2, @repo.git.commits.size
-      assert_equal "Added directory #{@data_dir} into '.'", @repo.git.commits[1].message
+      assert_equal "Added directory #{@data_dir} into '/'", @repo.git.commits[1].message
       assert (@repo.git.tree/('data/file1')).is_a? Grit::Blob
       assert (@repo.git.tree/('data/file2')).is_a? Grit::Blob
       assert (@repo.git.tree/('data/subdir1')).is_a? Grit::Tree
