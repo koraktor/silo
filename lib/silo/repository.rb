@@ -132,7 +132,7 @@ module Silo
     def contents(path = nil)
       contents = []
 
-      object = find_object path
+      object = find_object(path || '/')
       contents << path unless path.nil? || object.nil?
       if object.is_a? Grit::Tree
         (object.blobs + object.trees).each do |obj|

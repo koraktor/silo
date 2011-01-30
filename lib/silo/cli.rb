@@ -81,8 +81,8 @@ module Silo
       Repository.new path
     end
 
-    flag :l
-    flag :r
+    flag :l, 'List each object in a separate line'
+    flag :r, 'Reverse list order'
     command :list, 'List the contents of a repository', :paths => [ :remainder, :optional ] do
       paths = self.paths || [nil]
       contents = []
