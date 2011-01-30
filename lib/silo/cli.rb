@@ -101,7 +101,6 @@ module Silo
     end
 
     command :remote, 'Add or remove remote repositories', { :action => ['add', 'rm', :optional], :name => :optional, :url => :optional } do
-      repo = Repository.new @repo_path
       usage = lambda do
         puts 'usage: silo remote add <name> <url>'
         puts '   or: silo remote rm <name>'
