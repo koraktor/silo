@@ -7,10 +7,9 @@ description: With Silo you can backup arbitrary files into one or more Git
 license:  BSD
 authors:  Sebastian Staudt
 email:    koraktor@gmail.com
-homepage: http://koraktor.github.com/silo
+homepage: http://koraktor.de/silo
 has_yard: true
 
-executables:   silo
 extra_doc_files:
  - Changelog.md
  - LICENSE
