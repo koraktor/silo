@@ -14,6 +14,9 @@ module Silo
       # @return [String] The name of this remote
       attr_reader :name
       
+      # @return [String] The URL of this remote
+      attr_reader :url
+
       # Creates a new remote with the specified name
       #
       # @param [Repository] repo The Silo repository this remote belongs to

@@ -106,6 +106,12 @@ module Silo
         puts '   or: silo remote rm <name>'
       end
       case action
+        when nil
+          repo.remotes.each_value do |remote|
+            info = remote.name
+            info += "  #{remote.url}" if $VERBOSE
+            puts info
+          end
         when 'add'
           if url.nil?
             repo.add_remote name, url
