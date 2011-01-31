@@ -105,6 +105,11 @@ class TestRepository < Test::Unit::TestCase
       assert (@repo.git.tree/('file2')).is_a? Grit::Blob
       assert_equal "Added file #{@data_dir + 'file1'} into '/'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[2].message
+      assert_equal %w{.silo file1 file2}, @repo.contents
+
+      assert_raise FileNotFoundError do
+        @repo.restore 'file3'
+      end
     end
 
     should 'save directory trees correctly' do
@@ -118,6 +123,13 @@ class TestRepository < Test::Unit::TestCase
       assert (@repo.git.tree/('data/subdir1/file1')).is_a? Grit::Blob
       assert (@repo.git.tree/('data/subdir2')).is_a? Grit::Tree
       assert (@repo.git.tree/('data/subdir2/file2')).is_a? Grit::Blob
+      assert_equal %w{data data/file1 data/file2 data/subdir1 data/subdir1/file1 data/subdir2 data/subdir2/file2}, @repo.contents('data')
+      assert_equal %w{data/subdir1 data/subdir1/file1}, @repo.contents('data/subdir1')
+      assert_equal %w{data/subdir2 data/subdir2/file2}, @repo.contents('data/subdir2')
+
+      assert_raise FileNotFoundError do
+        @repo.restore 'file1'
+      end
     end
 
     should 'save single files correctly into a prefix directory' do
@@ -129,6 +141,10 @@ class TestRepository < Test::Unit::TestCase
       assert (@repo.git.tree/('prefix/file2')).is_a? Grit::Blob
       assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[2].message
+
+      assert_raise FileNotFoundError do
+        @repo.restore 'file1'
+      end
     end
 
     should 'save directory trees correctly into a prefix directory' do
@@ -142,6 +158,10 @@ class TestRepository < Test::Unit::TestCase
       assert (@repo.git.tree/('prefix/data/subdir1/file1')).is_a? Grit::Blob
       assert (@repo.git.tree/('prefix/data/subdir2')).is_a? Grit::Tree
       assert (@repo.git.tree/('prefix/data/subdir2/file2')).is_a? Grit::Blob
+
+      assert_raise FileNotFoundError do
+        @repo.restore 'prefix/file1'
+      end
     end
 
     should 'restore single files correctly' do
@@ -166,6 +186,24 @@ class TestRepository < Test::Unit::TestCase
 
       assert File.exist? @target_dir/'subdir1'
       assert File.exist? @target_dir/'subdir1/file1'
+    end
+
+    should 'remove files and directories correctly' do
+      @repo.add @data_dir
+      @repo.add @data_dir/'file1'
+
+      @repo.remove 'data/file1'
+      assert_equal 4, @repo.git.commits.size
+      assert (@repo.git.tree/'data/file1').nil?
+
+      @repo.remove 'data'
+      assert_equal 5, @repo.git.commits.size
+      p @repo.contents
+      assert (@repo.git.tree/'data').nil?
+
+      @repo.remove 'file1'
+      assert_equal 6, @repo.git.commits.size
+      assert (@repo.git.tree/'file1').nil?
     end
 
     should 'purge files and directories correctly' do
