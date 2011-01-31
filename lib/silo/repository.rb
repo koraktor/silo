@@ -307,16 +307,18 @@ module Silo
     def remove(path)
       index = @git.index
       index.read_tree 'HEAD'
-      remove = lambda do |f|
-        dir  = File.stat(f).directory?
-        if dir
-          Dir.entries(f)[2..-1].each do |child|
-            remove.call File.join(f, child)
+      @git.remove path
+      remove = lambda do |p|
+        object = @git.tree/p
+        tree = object.is_a? Grit::Tree
+        if tree
+          (object.trees + object.blobs).each do |child|
+            remove.call File.join(p, child.basename)
           end
         else
-          index.delete f
+          index.delete p
         end
-        dir
+        tree
       end
       dir = remove.call path
       type = dir ? 'directory' : 'file'
