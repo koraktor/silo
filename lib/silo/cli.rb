@@ -76,9 +76,9 @@ module Silo
     end
 
     command :init, 'Initialize a Silo repository', :path => :optional do
-      path = File.expand_path(path || '.')
-      puts "Initializing Silo repository in #{path}..."
-      Repository.new path
+      repo_path = File.expand_path(path || '.')
+      puts "Initializing Silo repository in #{repo_path}..."
+      Repository.new repo_path
     end
 
     flag :l, 'List each object in a separate line'
