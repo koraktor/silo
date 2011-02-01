@@ -8,6 +8,8 @@ require 'tmpdir'
 require 'rubygems'
 require 'grit'
 
+require File.dirname(__FILE__) + '/../grit/index'
+
 module Silo
 
   # Represents a Silo repository
@@ -305,23 +307,12 @@ module Silo
     # @param [String] path The path of the file or directory to remove from the
     #        repository
     def remove(path)
+      object = object! path
+      path += '/' if object.is_a?(Grit::Tree) && path[-1] != 47
       index = @git.index
       index.read_tree 'HEAD'
-      @git.remove path
-      remove = lambda do |p|
-        object = @git.tree/p
-        tree = object.is_a? Grit::Tree
-        if tree
-          (object.trees + object.blobs).each do |child|
-            remove.call File.join(p, child.basename)
-          end
-        else
-          index.delete p
-        end
-        tree
-      end
-      dir = remove.call path
-      type = dir ? 'directory' : 'file'
+      index.delete path
+      type = object.is_a?(Grit::Tree) ? 'directory' : 'file'
       commit_msg = "Removed #{type} #{path}"
       index.commit commit_msg, @git.head.commit.sha
     end
