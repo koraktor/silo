@@ -198,7 +198,6 @@ class TestRepository < Test::Unit::TestCase
 
       @repo.remove 'data'
       assert_equal 5, @repo.git.commits.size
-      p @repo.contents
       assert (@repo.git.tree/'data').nil?
 
       @repo.remove 'file1'
