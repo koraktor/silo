@@ -76,7 +76,7 @@ module Silo
     end
 
     command :init, 'Initialize a Silo repository', :path => :optional do
-      repo_path = File.expand_path(path || '.')
+      repo_path = File.expand_path(args[:path] || '.')
       puts "Initializing Silo repository in #{repo_path}..."
       Repository.new repo_path
     end
