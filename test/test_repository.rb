@@ -19,7 +19,7 @@ class TestRepository < Test::Unit::TestCase
 
     should 'contain a bare Git repository prepared for Silo by default' do
       repo = Repository.new @dir
-      assert repo.git.is_a? Grit::Repo
+      assert_instance_of Grit::Repo, repo.git
       assert repo.prepared?
       assert_equal 1, repo.git.commits.size
       assert_equal 'Enabled Silo for this repository', repo.git.commits.first.message
@@ -27,7 +27,7 @@ class TestRepository < Test::Unit::TestCase
 
     should 'contain a plain Git repository when option :prepare is false' do
       repo = Repository.new @dir, :prepare => false
-      assert repo.git.is_a? Grit::Repo
+      assert_instance_of Grit::Repo, repo.git
       assert !repo.prepared?
       assert_equal 0, repo.git.commits.size
     end
@@ -65,7 +65,7 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'contain a Git repository' do
-      assert @repo.git.is_a? Grit::Repo
+      assert_instance_of Grit::Repo, @repo.git
     end
 
     should 'be prepared' do
@@ -101,8 +101,8 @@ class TestRepository < Test::Unit::TestCase
       @repo.add @data_dir/'file2'
 
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/('file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('file2')).is_a? Grit::Blob
+      assert_instance_of Grit::Blob, @repo.git.tree/'file1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'file2'
       assert_equal "Added file #{@data_dir + 'file1'} into '/'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[2].message
       assert_equal %w{.silo file1 file2}, @repo.contents
@@ -117,12 +117,12 @@ class TestRepository < Test::Unit::TestCase
 
       assert_equal 2, @repo.git.commits.size
       assert_equal "Added directory #{@data_dir} into '/'", @repo.git.commits[1].message
-      assert (@repo.git.tree/('data/file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('data/file2')).is_a? Grit::Blob
-      assert (@repo.git.tree/('data/subdir1')).is_a? Grit::Tree
-      assert (@repo.git.tree/('data/subdir1/file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('data/subdir2')).is_a? Grit::Tree
-      assert (@repo.git.tree/('data/subdir2/file2')).is_a? Grit::Blob
+      assert_instance_of Grit::Blob, @repo.git.tree/'data/file1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'data/file2'
+      assert_instance_of Grit::Tree, @repo.git.tree/'data/subdir1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'data/subdir1/file1'
+      assert_instance_of Grit::Tree, @repo.git.tree/'data/subdir2'
+      assert_instance_of Grit::Blob, @repo.git.tree/'data/subdir2/file2'
       assert_equal %w{data data/file1 data/file2 data/subdir1 data/subdir1/file1 data/subdir2 data/subdir2/file2}, @repo.contents('data')
       assert_equal %w{data/subdir1 data/subdir1/file1}, @repo.contents('data/subdir1')
       assert_equal %w{data/subdir2 data/subdir2/file2}, @repo.contents('data/subdir2')
@@ -137,8 +137,8 @@ class TestRepository < Test::Unit::TestCase
       @repo.add @data_dir/'file2', 'prefix'
 
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/('prefix/file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('prefix/file2')).is_a? Grit::Blob
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file2'
       assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
       assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[2].message
 
@@ -152,12 +152,12 @@ class TestRepository < Test::Unit::TestCase
 
       assert_equal 2, @repo.git.commits.size
       assert_equal "Added directory #{@data_dir} into 'prefix'", @repo.git.commits[1].message
-      assert (@repo.git.tree/('prefix/data/file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('prefix/data/file2')).is_a? Grit::Blob
-      assert (@repo.git.tree/('prefix/data/subdir1')).is_a? Grit::Tree
-      assert (@repo.git.tree/('prefix/data/subdir1/file1')).is_a? Grit::Blob
-      assert (@repo.git.tree/('prefix/data/subdir2')).is_a? Grit::Tree
-      assert (@repo.git.tree/('prefix/data/subdir2/file2')).is_a? Grit::Blob
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/file1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/file2'
+      assert_instance_of Grit::Tree, @repo.git.tree/'prefix/data/subdir1'
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/subdir1/file1'
+      assert_instance_of Grit::Tree, @repo.git.tree/'prefix/data/subdir2'
+      assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/subdir2/file2'
 
       assert_raise FileNotFoundError do
         @repo.restore 'prefix/file1'
@@ -194,15 +194,15 @@ class TestRepository < Test::Unit::TestCase
 
       @repo.remove 'data/file1'
       assert_equal 4, @repo.git.commits.size
-      assert (@repo.git.tree/'data/file1').nil?
+      assert_nil @repo.git.tree/'data/file1'
 
       @repo.remove 'data'
       assert_equal 5, @repo.git.commits.size
-      assert (@repo.git.tree/'data').nil?
+      assert_nil @repo.git.tree/'data'
 
       @repo.remove 'file1'
       assert_equal 6, @repo.git.commits.size
-      assert (@repo.git.tree/'file1').nil?
+      assert_nil @repo.git.tree/'file1'
     end
 
     should 'purge files and directories correctly' do
@@ -211,15 +211,15 @@ class TestRepository < Test::Unit::TestCase
 
       @repo.purge 'data/file1'
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/'data/file1').nil?
+      assert_nil @repo.git.tree/'data/file1'
 
       @repo.purge 'data'
       assert_equal 2, @repo.git.commits.size
-      assert (@repo.git.tree/'data').nil?
+      assert_nil @repo.git.tree/'data'
 
       @repo.purge 'file1'
       assert_equal 1, @repo.git.commits.size
-      assert (@repo.git.tree/'file1').nil?
+      assert_nil @repo.git.tree/'file1'
 
       @repo.add @data_dir
       @repo.add @data_dir/'file1'
@@ -227,8 +227,8 @@ class TestRepository < Test::Unit::TestCase
       @repo.purge 'data', false
       @repo.purge 'file1', false
       assert_equal 3, @repo.git.commits.size
-      assert (@repo.git.tree/'data').nil?
-      assert (@repo.git.tree/'file1').nil?
+      assert_nil @repo.git.tree/'data'
+      assert_nil @repo.git.tree/'file1'
     end
 
     teardown do
