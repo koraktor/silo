@@ -164,9 +164,9 @@ module Silo
     # @yield [path] The code inside this block will be executed with
     #        +$GIT_WORK_TREE+ set
     # @yieldparam [String] path The absolute path used for +$GIT_WORK_TREE+
-    def in_work_tree(path = '.')
+    def in_work_tree(path)
       tmp_dir = path == :tmp
-      path = tmp_dir ? Dir.mktmpdir : File.expand_path(path)
+      path = Dir.mktmpdir if tmp_dir
       old_work_tree = ENV['GIT_WORK_TREE']
       ENV['GIT_WORK_TREE'] = path
       Dir.chdir(path) { yield path }
