@@ -12,7 +12,7 @@ class Grit::Index
   # @param [String] path The path to the file
   # @param [String] data The contents of the file
   def add(path, data)
-    is_dir = path[-1] == 47
+    is_dir = path[-1].chr == '/'
     path = path.split('/')
     filename = path.pop
     filename += '/' if is_dir

@@ -308,7 +308,7 @@ module Silo
     #        repository
     def remove(path)
       object = object! path
-      path += '/' if object.is_a?(Grit::Tree) && path[-1] != 47
+      path += '/' if object.is_a?(Grit::Tree) && path[-1].chr != '/'
       index = @git.index
       index.read_tree 'HEAD'
       index.delete path
