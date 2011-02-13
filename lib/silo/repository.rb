@@ -100,8 +100,7 @@ module Silo
           pre  = (p == '/') ? file : File.join(p, file)
           dir  = File.stat(f).directory?
           if dir
-            Dir.entries(f).each do |child|
-              next if child == '.' || child == '..'
+            (Dir.entries(f) - %w{. ..}).each do |child|
               add.call File.join(f, child), pre
             end
           else
