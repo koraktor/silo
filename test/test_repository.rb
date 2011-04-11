@@ -104,7 +104,7 @@ class TestRepository < Test::Unit::TestCase
       assert_instance_of Grit::Blob, @repo.git.tree/'file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'file2'
       assert_equal "Added file #{@data_dir + 'file1'} into '/'", @repo.git.commits[1].message
-      assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[2].message
+      assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[0].message
       assert_equal %w{.silo file1 file2}, @repo.contents
 
       assert_raise FileNotFoundError do
@@ -116,7 +116,7 @@ class TestRepository < Test::Unit::TestCase
       @repo.add @data_dir
 
       assert_equal 2, @repo.git.commits.size
-      assert_equal "Added directory #{@data_dir} into '/'", @repo.git.commits[1].message
+      assert_equal "Added directory #{@data_dir} into '/'", @repo.git.commits[0].message
       assert_instance_of Grit::Blob, @repo.git.tree/'data/file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'data/file2'
       assert_instance_of Grit::Tree, @repo.git.tree/'data/subdir1'
@@ -140,7 +140,7 @@ class TestRepository < Test::Unit::TestCase
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file2'
       assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
-      assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[2].message
+      assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[0].message
 
       assert_raise FileNotFoundError do
         @repo.restore 'file1'
@@ -151,7 +151,7 @@ class TestRepository < Test::Unit::TestCase
       @repo.add @data_dir, 'prefix'
 
       assert_equal 2, @repo.git.commits.size
-      assert_equal "Added directory #{@data_dir} into 'prefix'", @repo.git.commits[1].message
+      assert_equal "Added directory #{@data_dir} into 'prefix'", @repo.git.commits[0].message
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/data/file2'
       assert_instance_of Grit::Tree, @repo.git.tree/'prefix/data/subdir1'
