@@ -112,7 +112,7 @@ module Silo
         dir = add.call path, prefix
         type = dir ? 'directory' : 'file'
         commit_msg = "Added #{type} #{path} into '#{prefix}'"
-        index.commit commit_msg, @git.head.commit.sha
+        index.commit commit_msg, [@git.head.commit.sha]
       end
     end
 
@@ -315,7 +315,7 @@ module Silo
       index.delete path
       type = object.is_a?(Grit::Tree) ? 'directory' : 'file'
       commit_msg = "Removed #{type} #{path}"
-      index.commit commit_msg, @git.head.commit.sha
+      index.commit commit_msg, [@git.head.commit.sha]
     end
     alias_method :rm, :remove
 
