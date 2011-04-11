@@ -6,7 +6,8 @@
 require 'tmpdir'
 
 require 'rubygems'
-require 'grit'
+require 'bundler'
+Bundler.setup :default
 
 require File.dirname(__FILE__) + '/../grit/git-ruby/repository'
 require File.dirname(__FILE__) + '/../grit/index'

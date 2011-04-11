@@ -30,6 +30,7 @@ If you want to use the development code you should clone the Git repository:
 
     $ git clone git://github.com/koraktor/silo.git
     $ cd silo
+    $ bundle install
     $ rake install
 
 ## Basic usage
