@@ -8,6 +8,4 @@ $: << File.dirname(__FILE__)
 require 'silo'
 include Silo
 
-require 'rubygems'
-require 'shoulda'
-
+Bundler.require :test

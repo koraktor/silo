@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.licenses    = [ 'BSD' ]
   s.homepage    = 'http://koraktor.de/silo'
   s.summary     = 'A command-line utility and API for Git-based backups'
-  s.description = 'With Silo you can backup arbitrary files into one or more Git repositories and take advantage of Git's compression, speed and other features. No Git knowledge needed.'
+  s.description = %Q{With Silo you can backup arbitrary files into one or more Git repositories and take advantage of Git's compression, speed and other features. No Git knowledge needed.}
 
   s.add_bundler_dependencies
   s.requirements = [ 'git >= 1.6' ]
