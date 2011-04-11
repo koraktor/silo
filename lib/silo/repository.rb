@@ -154,6 +154,42 @@ module Silo
       @remotes.each_value { |remote| remote.push }
     end
 
+    # Returns the object (tree or blob) at the given path inside the repository
+    #
+    # @param [String] path The path of the object in the repository
+    # @raise [FileNotFoundError] if no object with the given path exists
+    # @return [Grit::Blob, Grit::Tree] The object at the given path
+    def find_object(path = '/')
+      (path == '/') ? @git.tree : @git.tree/path
+    end
+
+    # Loads remotes from the backing Git repository's configuration
+    #
+    # @see Remote::Git
+    def git_remotes
+      remotes = {}
+      @git.git.remote.split.each do |remote|
+        url = @git.git.config({}, '--get', "remote.#{remote}.url").strip
+        remotes[remote] = Remote::Git.new(self, remote, url)
+      end
+      remotes
+    end
+
+    # Generate a history of Git commits for either the complete repository or
+    # a specified file or directory
+    #
+    # @param [String] path The path of the file or directory to generate the
+    #        history for. If +nil+, the history of the entire repository will
+    #        be returned.
+    # @return [Array<Grit::Commit>] The commit history for the repository or
+    #         given path
+    def history(path = nil)
+      params = ['--format=raw']
+      params += ['--', path] unless path.nil?
+      output = @git.git.log({}, *params)
+      Grit::Commit.list_from_string @git, output
+    end
+
     # Run a block of code with +$GIT_WORK_TREE+ set to a specified path
     #
     # This executes a block of code while the environment variable
@@ -206,16 +242,16 @@ module Silo
       info
     end
 
-    # Loads remotes from the backing Git repository's configuration
+    # Returns the object (tree or blob) at the given path inside the repository
+    # or fail if it does not exist
     #
-    # @see Remote::Git
-    def git_remotes
-      remotes = {}
-      @git.git.remote.split.each do |remote|
-        url = @git.git.config({}, '--get', "remote.#{remote}.url").strip
-        remotes[remote] = Remote::Git.new(self, remote, url)
-      end
-      remotes
+    # @param (see #find_object)
+    # @raise [FileNotFoundError] if no object with the given path exists
+    # @return (see #find_object)
+    def object!(path)
+      object = find_object path
+      raise FileNotFoundError.new(path) if object.nil?
+      object
     end
 
     # Prepares the Git repository backing this Silo repository for use with
@@ -229,42 +265,6 @@ module Silo
         @git.add '.silo'
         @git.commit_index 'Enabled Silo for this repository'
       end
-    end
-
-    # Generate a history of Git commits for either the complete repository or
-    # a specified file or directory
-    #
-    # @param [String] path The path of the file or directory to generate the
-    #        history for. If +nil+, the history of the entire repository will
-    #        be returned.
-    # @return [Array<Grit::Commit>] The commit history for the repository or
-    #         given path
-    def history(path = nil)
-      params = ['--format=raw']
-      params += ['--', path] unless path.nil?
-      output = @git.git.log({}, *params)
-      Grit::Commit.list_from_string @git, output
-    end
-
-    # Returns the object (tree or blob) at the given path inside the repository
-    #
-    # @param [String] path The path of the object in the repository
-    # @raise [FileNotFoundError] if no object with the given path exists
-    # @return [Grit::Blob, Grit::Tree] The object at the given path
-    def find_object(path = '/')
-      (path == '/') ? @git.tree : @git.tree/path
-    end
-
-    # Returns the object (tree or blob) at the given path inside the repository
-    # or fail if it does not exist
-    #
-    # @param (see #find_object)
-    # @raise [FileNotFoundError] if no object with the given path exists
-    # @return (see #find_object)
-    def object!(path)
-      object = find_object path
-      raise FileNotFoundError.new(path) if object.nil?
-      object
     end
 
     # Return whether the Git repository backing this Silo repository has
