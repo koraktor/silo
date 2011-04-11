@@ -55,7 +55,7 @@ module Silo
 
       @path = File.expand_path path
 
-      if File.exist?(@path) && Dir.new(@path).count > 2
+      if File.exist?(@path) && Dir.entries(@path).size > 2
         unless File.exist?(File.join(@path, 'HEAD')) &&
                File.stat(File.join(@path, 'objects')).directory? &&
                File.stat(File.join(@path, 'refs')).directory?
