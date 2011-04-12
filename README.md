@@ -40,6 +40,9 @@ repository:
 
 Or even better, create your own fork.
 
+The current status of the development code:
+[![Build Status](http://travis-ci.org/koraktor/silo.png)][6]
+
 ## Basic usage
 
 ### Configuration files
@@ -159,3 +162,4 @@ Follow Silo on Twitter [@silorb](http://twitter.com/silorb).
  [3]: http://github.com/koraktor/silo
  [4]: http://github.com/koraktor/silo/issues
  [5]: http://rubydoc.info/github/koraktor/silo/master/frames
+ [6]: http://travis-ci.org/koraktor/silo
