@@ -1,14 +1,14 @@
 # Changelog
 
-## `master` branch
+## Version 0.1.2
 
  * Improved compatibility with Rubies other than 1.8.7
  * Use Bundler
  * Added a monkey patch for Grit returning commits in wrong order
  * Improved tests
 
- See the [Git history](https://github.com/koraktor/silo/compare/0.1.1...master)
- for changes in the `master` branch since version 0.1.1
+ See the [Git history](https://github.com/koraktor/silo/compare/0.1.1...0.1.2)
+ for version 0.1.2
 
 ## Version 0.1.1
 

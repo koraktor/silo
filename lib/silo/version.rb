@@ -6,6 +6,6 @@
 module Silo
 
   # The current version of the Silo gem
-  VERSION = '0.1.1'
+  VERSION = '0.1.2'
 
 end
