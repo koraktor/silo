@@ -60,6 +60,7 @@ class TestRepository < Test::Unit::TestCase
       FileUtils.touch '.silo'
       `git add .silo`
       `git commit -m "Enabled Silo for this repository"`
+      ENV['GIT_DIR'] = nil
       ENV['GIT_WORK_TREE'] = nil
       @repo = Repository.new @repo_dir
     end
