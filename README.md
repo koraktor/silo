@@ -26,12 +26,19 @@ and recommended for most users.
 
     $ gem install silo
 
-If you want to use the development code you should clone the Git repository:
+If you want to use the development code you can add the following dependency
+to your Gemfile:
+
+    gem 'silo', :git => git://github.com/koraktor/silo.git
+
+If you want to work with the development code you should clone the Git
+repository:
 
     $ git clone git://github.com/koraktor/silo.git
     $ cd silo
     $ bundle install
-    $ rake install
+
+Or even better, create your own fork.
 
 ## Basic usage
 
