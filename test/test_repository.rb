@@ -98,7 +98,9 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save single files correctly' do
+      sleep 1
       @repo.add @data_dir/'file1'
+      sleep 1
       @repo.add @data_dir/'file2'
 
       assert_equal 3, @repo.git.commits.size
@@ -114,6 +116,7 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save directory trees correctly' do
+      sleep 1
       @repo.add @data_dir
 
       assert_equal 2, @repo.git.commits.size
@@ -134,7 +137,9 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save single files correctly into a prefix directory' do
+      sleep 1
       @repo.add @data_dir/'file1', 'prefix'
+      sleep 1
       @repo.add @data_dir/'file2', 'prefix'
 
       assert_equal 3, @repo.git.commits.size
@@ -149,6 +154,7 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save directory trees correctly into a prefix directory' do
+      sleep 1
       @repo.add @data_dir, 'prefix'
 
       assert_equal 2, @repo.git.commits.size
