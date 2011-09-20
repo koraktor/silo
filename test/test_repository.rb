@@ -98,6 +98,12 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save single files correctly' do
+      commit_msgs = [
+        'Enabled Silo for this repository',
+        "Added file #{@data_dir + 'file1'} into '/'",
+        "Added file #{@data_dir + 'file2'} into '/'"
+      ]
+
       sleep 1
       @repo.add @data_dir/'file1'
       sleep 1
@@ -106,8 +112,7 @@ class TestRepository < Test::Unit::TestCase
       assert_equal 3, @repo.git.commits.size
       assert_instance_of Grit::Blob, @repo.git.tree/'file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'file2'
-      assert_equal "Added file #{@data_dir + 'file1'} into '/'", @repo.git.commits[1].message
-      assert_equal "Added file #{@data_dir + 'file2'} into '/'", @repo.git.commits[0].message
+      assert_same_elements commit_msgs, @repo.git.commits.map(&:message)
       assert_equal %w{.silo file1 file2}, @repo.contents
 
       assert_raise FileNotFoundError do
@@ -137,6 +142,12 @@ class TestRepository < Test::Unit::TestCase
     end
 
     should 'save single files correctly into a prefix directory' do
+      commit_msgs = [
+        'Enabled Silo for this repository',
+        "Added file #{@data_dir + 'file1'} into 'prefix'",
+        "Added file #{@data_dir + 'file2'} into 'prefix'"
+      ]
+
       sleep 1
       @repo.add @data_dir/'file1', 'prefix'
       sleep 1
@@ -145,8 +156,7 @@ class TestRepository < Test::Unit::TestCase
       assert_equal 3, @repo.git.commits.size
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file1'
       assert_instance_of Grit::Blob, @repo.git.tree/'prefix/file2'
-      assert_equal "Added file #{@data_dir + 'file1'} into 'prefix'", @repo.git.commits[1].message
-      assert_equal "Added file #{@data_dir + 'file2'} into 'prefix'", @repo.git.commits[0].message
+      assert_same_elements commit_msgs, @repo.git.commits.map(&:message)
 
       assert_raise FileNotFoundError do
         @repo.restore 'file1'
