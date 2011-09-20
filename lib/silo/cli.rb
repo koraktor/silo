@@ -5,6 +5,13 @@
 
 require 'rubikon'
 
+HASH_CLASS = if RUBY_VERSION < '1.9'
+  require 'hashery/ordered_hash'
+  OrderedHash
+else
+  Hash
+end
+
 module Silo
 
   # This class is a Rubikon application that implements the command-line
@@ -102,7 +109,8 @@ module Silo
       end
     end
 
-    command :remote, 'Add or remove remote repositories', { :action => ['add', 'rm', :optional], :remote_name => :optional, :url => :optional } do
+    args = HASH_CLASS[:action, ['add', 'rm', :optional], :remote_name, :optional, :url, :optional]
+    command :remote, 'Add or remove remote repositories', args do
       usage = lambda do
         puts 'usage: silo remote add <name> <url>'
         puts '   or: silo remote rm <name>'

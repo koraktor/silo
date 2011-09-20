@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.description = %Q{With Silo you can backup arbitrary files into one or more Git repositories and take advantage of Git's compression, speed and other features. No Git knowledge needed.}
 
   s.add_dependency 'grit', '~> 2.4.1'
+  s.add_dependency 'hashery', '~> 1.4.0' if RUBY_VERSION < '1.9'
   s.add_dependency 'rubikon', '~> 0.6.0'
 
   s.add_development_dependency 'rake', '~> 0.9.2'
