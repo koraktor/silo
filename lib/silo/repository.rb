@@ -5,7 +5,6 @@
 
 require 'tmpdir'
 
-require 'rubygems'
 require 'grit'
 
 require File.dirname(__FILE__) + '/../grit/index'

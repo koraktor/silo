@@ -3,7 +3,6 @@
 #
 # Copyright (c) 2010-2011, Sebastian Staudt
 
-require 'rubygems'
 require 'rubikon'
 
 module Silo
