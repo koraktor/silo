@@ -115,13 +115,13 @@ module Silo
             puts info
           end
         when 'add'
-          if url.nil?
+          unless url.nil?
             repo.add_remote remote_name, url
           else
             usage.call
           end
         when 'rm'
-          unless url.nil?
+          if url.nil?
             repo.remove_remote remote_name
           else
             usage.call
