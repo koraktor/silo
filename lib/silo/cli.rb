@@ -102,7 +102,7 @@ module Silo
       end
     end
 
-    command :remote, 'Add or remove remote repositories', { :action => ['add', 'rm', :optional], :name => :optional, :url => :optional } do
+    command :remote, 'Add or remove remote repositories', { :action => ['add', 'rm', :optional], :remote_name => :optional, :url => :optional } do
       usage = lambda do
         puts 'usage: silo remote add <name> <url>'
         puts '   or: silo remote rm <name>'
@@ -116,13 +116,13 @@ module Silo
           end
         when 'add'
           if url.nil?
-            repo.add_remote name, url
+            repo.add_remote remote_name, url
           else
             usage.call
           end
         when 'rm'
           unless url.nil?
-            repo.remove_remote name
+            repo.remove_remote remote_name
           else
             usage.call
           end
