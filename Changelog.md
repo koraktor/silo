@@ -1,6 +1,18 @@
 # Changelog
 
+## Version 0.1.3
+
+ **September 21<sup>st</sup>, 2011**
+
+ * Fixed problems of the `remote` command
+ * Various improvements to code style and integration
+
+ See the [Git history](https://github.com/koraktor/silo/compare/0.1.2...0.1.3)
+ for version 0.1.3
+
 ## Version 0.1.2
+
+ **April 12<sup>th</sup>, 2011**
 
  * Improved compatibility with Rubies other than 1.8.7
  * Use Bundler
@@ -11,6 +23,8 @@
  for version 0.1.2
 
 ## Version 0.1.1
+
+ **February 2<sup>nd</sup>, 2011**
 
  * Fixed bugs related to file operations
  * Added a monkey patch for Grit not being able to delete directories
