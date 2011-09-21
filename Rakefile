@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
@@ -26,8 +28,8 @@ begin
   # Create a rake task +:doc+ to build the documentation using YARD
   YARD::Rake::YardocTask.new do |yardoc|
     yardoc.name    = 'doc'
-    yardoc.files   = ['lib/**/*.rb', 'LICENSE', 'README.md']
-    yardoc.options = ['--private', '--title', 'Silo &mdash; API Documentation']
+    yardoc.files   = ['lib/**/*.rb', 'Changelog.md', 'LICENSE', 'README.md']
+    yardoc.options = ['--markup', 'markdown', '--private', '--protected', '--title', 'Silo – API Documentation']
   end
 rescue LoadError
   desc 'Generate YARD Documentation (not available)'
