@@ -21,7 +21,8 @@ Gem::Specification.new do |s|
 
   s.requirements = [ 'git >= 1.6' ]
 
-  s.files              = `git ls-files`.split("\n")
-  s.test_files         = `git ls-files -- test/test_*.rb`.split("\n")
-  s.require_paths      = [ 'lib' ]
+  s.executables   = [ 'silo' ]
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- test/test_*.rb`.split("\n")
+  s.require_paths = [ 'lib' ]
 end
