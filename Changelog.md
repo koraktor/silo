@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.1.4
+
+ **March 31<sup>st</sup>, 2012**
+
+ * Fixed gem not installing the executable
+
+ See the [Git history](https://github.com/koraktor/silo/compare/0.1.3...0.1.4)
+ for version 0.1.4
+
 ## Version 0.1.3
 
  **September 21<sup>st</sup>, 2011**
